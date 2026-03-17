@@ -143,11 +143,12 @@ def get_last_updated() -> str:
 _LAYOUT_BASE = dict(
     margin=dict(l=42, r=16, t=44, b=28),
     paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(255,255,255,0.02)",
-    xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    xaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)",
                tickfont=dict(size=10), showline=False, zeroline=False),
-    yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.05)",
-               tickfont=dict(size=10), showline=False, zeroline=False),
+    yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.08)",
+               tickfont=dict(size=10), showline=False, zeroline=False,
+               rangemode="normal"),
     hovermode="x unified",
     showlegend=False,
 )
@@ -178,7 +179,6 @@ def price_chart(
     color: str,
     date_from: datetime,
     height: int = 290,
-    y_min: float | None = None,
 ) -> go.Figure:
     fig = go.Figure()
     if df.empty or ticker not in df.columns:
@@ -193,19 +193,26 @@ def price_chart(
     s = s[~s.index.duplicated(keep="last")]        # remove roll-day duplicates
     s = s[s.index >= pd.Timestamp(date_from)]
 
+    if s.empty:
+        fig.add_annotation(text="No data available", xref="paper", yref="paper",
+                           x=0.5, y=0.5, showarrow=False, font=dict(color="gray"))
+        fig.update_layout(**_LAYOUT_BASE, height=height)
+        return fig
+
     fig.add_trace(go.Scatter(
         x=s.index, y=s.values, mode="lines", name=name,
         line=dict(color=color, width=2),
-        fill="tozeroy", fillcolor=_hex_to_rgba(color, 0.09),
-        connectgaps=False,   # leave gaps rather than drawing diagonal bridge lines
+        connectgaps=False,
         hovertemplate=f"<b>{name}</b><br>%{{x|%d %b %Y}}  %{{y:,.2f}}<extra></extra>",
     ))
 
+    # Explicitly set y range so axis starts near data, not at 0
+    pad = (s.max() - s.min()) * 0.05 if s.max() != s.min() else s.max() * 0.05
     lo = _LAYOUT_BASE.copy()
     lo.update(height=height,
-              title=dict(text=_title_with_delta(name, s), font=dict(size=13)))
-    if y_min is not None:
-        lo["yaxis"] = dict(**_LAYOUT_BASE["yaxis"], range=[y_min, None])
+              title=dict(text=_title_with_delta(name, s), font=dict(size=13)),
+              yaxis=dict(**_LAYOUT_BASE["yaxis"],
+                         range=[s.min() - pad, s.max() + pad]))
     fig.update_layout(**lo)
     return fig
 
@@ -235,14 +242,16 @@ def spread_chart(
         x=spread.index, y=spread.values,
         mode="lines", name=name,
         line=dict(color=color, width=2),
-        fill="tozeroy", fillcolor=_hex_to_rgba(color, 0.12),
         hovertemplate=f"<b>{name}</b><br>%{{x|%d %b %Y}}  %{{y:+,.2f}}<extra></extra>",
     ))
     fig.add_hline(y=0, line_color="rgba(255,255,255,0.25)", line_width=1)
 
+    pad = (spread.max() - spread.min()) * 0.05 if spread.max() != spread.min() else 1
     lo = _LAYOUT_BASE.copy()
     lo.update(height=height,
-              title=dict(text=_title_with_delta(name, spread), font=dict(size=13)))
+              title=dict(text=_title_with_delta(name, spread), font=dict(size=13)),
+              yaxis=dict(**_LAYOUT_BASE["yaxis"],
+                         range=[spread.min() - pad, spread.max() + pad]))
     fig.update_layout(**lo)
     return fig
 
@@ -312,7 +321,6 @@ def treasury_curve_chart(df: pd.DataFrame, height: int = 380) -> go.Figure:
             mode="lines+markers",
             line=dict(color="#00CC96", width=2.5),
             marker=dict(size=9, color="#00CC96"),
-            fill="tozeroy", fillcolor="rgba(0,204,150,0.08)",
             hovertemplate="<b>%{x}</b>  Yield: %{y:.3f}%<extra></extra>",
         ))
     else:
@@ -614,14 +622,14 @@ def main():
             price_chart(coal_df, "XO1 Comdty",
                         COAL_TICKERS["XO1 Comdty"]["name"],
                         COAL_TICKERS["XO1 Comdty"]["color"], date_from,
-                        height=420, y_min=50),
+                        height=420),
             use_container_width=True, config=_CHART_CFG,
         )
         st.plotly_chart(
             price_chart(coal_df, "XA1 Comdty",
                         COAL_TICKERS["XA1 Comdty"]["name"],
                         COAL_TICKERS["XA1 Comdty"]["color"], date_from,
-                        height=420, y_min=50),
+                        height=420),
             use_container_width=True, config=_CHART_CFG,
         )
         st.plotly_chart(
@@ -637,7 +645,7 @@ def main():
             price_chart(coal_df, "XW1 Comdty",
                         COAL_TICKERS["XW1 Comdty"]["name"],
                         COAL_TICKERS["XW1 Comdty"]["color"], date_from,
-                        height=420, y_min=50),
+                        height=420),
             use_container_width=True, config=_CHART_CFG,
         )
 
