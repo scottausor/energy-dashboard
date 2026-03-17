@@ -1,0 +1,13 @@
+# ── Streamlit Cloud (display only) ────────────────────────────────────────────
+# These are the only packages Streamlit Community Cloud needs.
+streamlit>=1.32.0
+plotly>=5.18.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# ── Local Bloomberg machine only ──────────────────────────────────────────────
+# bloomberg_pull.py also needs xbbg. Install it locally with:
+#   pip install xbbg
+# (blpapi must be installed first from https://bloomberg.com/professional/support/api-library)
+# Do NOT uncomment xbbg here — Streamlit Cloud cannot install it and the deploy will fail.
+# xbbg>=0.7.7
