@@ -26,6 +26,7 @@ from config import (
     COAL_CT_CONTRACTS, ENERGY_CT_CONTRACTS,
     TTF_CURVE_TICKERS,
     TREASURY_TICKERS, FUTURES_CHAIN_FIELDS, HISTORY_FIELD,
+    PHYSICAL_COAL_TICKERS,
 )
 
 # ── Logging setup ──────────────────────────────────────────────────────────────
@@ -136,6 +137,8 @@ DEMO_SEED_PRICES = {
     # Energy
     "CO1 Comdty": 82.0, "CL1 Comdty": 78.0,
     "TTFG1MON BCFV Index": 35.0, "NG1 Comdty": 2.5, "AJKMM1 Comdty": 12.5,
+    # Physical Coal (Argus / Platts)
+    "CO03C001 Index": 108.0, "CO03C008 Index": 95.0, "NACI0004 Index": 102.0,
     # Macro
     "USDZAR Curncy": 18.50, "XAU Curncy": 2050.0, "XBTUSD Curncy": 62000.0,
     # Treasuries (yields)
@@ -338,13 +341,19 @@ def run():
     ct_pull  = bbg_explicit_contracts if BBG_OK else demo_explicit_contracts
 
     # 1 ── Coal prices ──────────────────────────────────────────────────────────
-    log.info("[1/6] Coal historical prices")
+    log.info("[1/7] Coal historical prices")
     coal_df = fetch(list(COAL_TICKERS.keys()))
     if not coal_df.empty:
         save_history(coal_df, "coal_prices.csv")
 
+    # 1b ── Physical Coal (Argus / Platts assessments) ──────────────────────────
+    log.info("[1b/7] Physical Coal prices (Argus / Platts)")
+    physical_coal_df = fetch(list(PHYSICAL_COAL_TICKERS.keys()))
+    if not physical_coal_df.empty:
+        save_history(physical_coal_df, "physical_coal_prices.csv")
+
     # 2 ── Coal CT explicit contracts ───────────────────────────────────────────
-    log.info("[2/6] Coal CT contracts (Monthly / Quarterly / Yearly)")
+    log.info("[2/7] Coal CT contracts (Monthly / Quarterly / Yearly)")
     ct_df = ct_pull(COAL_CT_CONTRACTS)
     if not ct_df.empty:
         path = os.path.join(DATA_DIR, "futures", "coal_ct_contracts.csv")
@@ -352,27 +361,27 @@ def run():
         log.info(f"  saved → {path}  rows={len(ct_df)}")
 
     # 2b ── Coal forward-curve chains (CCRV) ────────────────────────────────────
-    log.info("[2b/6] Coal futures chains (CCRV)")
+    log.info("[2b/7] Coal futures chains (CCRV)")
     for ticker in COAL_FUTURES_TICKERS:
         df = chain(ticker)
         if not df.empty:
             save_chain(df, ticker)
 
     # 3 ── Energy prices ────────────────────────────────────────────────────────
-    log.info("[3/6] Energy historical prices")
+    log.info("[3/7] Energy historical prices")
     energy_df = fetch(list(ENERGY_TICKERS.keys()))
     if not energy_df.empty:
         save_history(energy_df, "energy_prices.csv")
 
     # 4 ── Energy futures chains (CCRV) ────────────────────────────────────────
-    log.info("[4/6] Energy futures chains (CCRV)")
+    log.info("[4/7] Energy futures chains (CCRV)")
     for ticker in ENERGY_FUTURES_TICKERS:
         df = chain(ticker)
         if not df.empty:
             save_chain(df, ticker)
 
     # 4b ── Energy CT explicit contracts ────────────────────────────────────────
-    log.info("[4b/6] Energy CT contracts (18 monthly each)")
+    log.info("[4b/7] Energy CT contracts (18 monthly each)")
     energy_ct_df = ct_pull(ENERGY_CT_CONTRACTS)
     if not energy_ct_df.empty:
         path = os.path.join(DATA_DIR, "futures", "energy_ct_contracts.csv")
@@ -380,7 +389,7 @@ def run():
         log.info(f"  saved → {path}  rows={len(energy_ct_df)}")
 
     # 4c ── TTF explicit forward curve (FSTUM1–24 Index) ───────────────────────
-    log.info("[4c/6] TTF forward curve (FSTUM1–24 Index)")
+    log.info("[4c/7] TTF forward curve (FSTUM1–24 Index)")
     try:
         if BBG_OK:
             ttf_raw = blp.bdp(tickers=TTF_CURVE_TICKERS,
@@ -408,7 +417,7 @@ def run():
         log.error(f"  TTF curve pull failed: {exc}")
 
     # 5 ── Macro: FX, Gold, BTC, Treasuries ────────────────────────────────────
-    log.info("[5/6] Macro indicators + Treasury curve")
+    log.info("[5/7] Macro indicators + Treasury curve")
     macro_df = fetch(list(MACRO_TICKERS.keys()))
     if not macro_df.empty:
         path = os.path.join(DATA_DIR, "macro", "macro_prices.csv")

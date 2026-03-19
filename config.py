@@ -41,6 +41,19 @@ COAL_CT_CONTRACTS = {
     },
 }
 
+# ── Physical Coal (Argus / Platts assessments) ─────────────────────────────────
+PHYSICAL_COAL_TICKERS = {
+    "CO03C001 Index": {"name": "Argus – Daily RB1", "short": "RB1", "color": "#F4A261"},
+    "CO03C008 Index": {"name": "Argus – Daily RB2", "short": "RB2", "color": "#E76F51"},
+    "NACI0004 Index": {"name": "Platts – Daily RB3", "short": "RB3", "color": "#E9C46A"},
+}
+
+# Sections group tickers into named sub-sections within the Physical Coal tab.
+# Add new sections here (e.g. "Newcastle", "ARA") as the dashboard grows.
+PHYSICAL_COAL_SECTIONS = {
+    "Richards Bay": ["CO03C001 Index", "CO03C008 Index", "NACI0004 Index"],
+}
+
 # ── Energy Benchmarks ──────────────────────────────────────────────────────────
 ENERGY_TICKERS = {
     "CO1 Comdty":          {"name": "Brent Crude",          "short": "Brent",   "color": "#2A9D8F"},

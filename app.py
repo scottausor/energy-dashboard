@@ -26,6 +26,7 @@ from config import (
     COAL_TICKERS, COAL_SPREAD, COAL_FUTURES_TICKERS, COAL_CT_CONTRACTS,
     ENERGY_TICKERS, ENERGY_FUTURES_TICKERS, ENERGY_CT_CONTRACTS,
     MACRO_TICKERS, TREASURY_TICKERS,
+    PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SECTIONS,
     DATA_DIR,
 )
 
@@ -129,6 +130,16 @@ def load_treasury() -> pd.DataFrame:
     if not os.path.exists(path):
         return pd.DataFrame()
     return pd.read_csv(path)
+
+
+@st.cache_data(ttl=3600)
+def load_physical_coal_prices() -> pd.DataFrame:
+    path = os.path.join(DATA_DIR, "prices", "physical_coal_prices.csv")
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    df = pd.read_csv(path, index_col=0, parse_dates=True)
+    df.index = pd.to_datetime(df.index)
+    return df
 
 
 def get_last_updated() -> str:
@@ -595,18 +606,41 @@ def main():
     macro_df  = load_macro_prices()
     tsy_df    = load_treasury()
 
-    coal_chains   = {t: (load_chain(t), COAL_TICKERS[t])   for t in COAL_FUTURES_TICKERS}
-    energy_chains = {t: (load_chain(t), ENERGY_TICKERS[t]) for t in ENERGY_FUTURES_TICKERS}
-    coal_ct_df    = load_coal_ct()
-    energy_ct_df  = load_energy_ct()
+    coal_chains      = {t: (load_chain(t), COAL_TICKERS[t])   for t in COAL_FUTURES_TICKERS}
+    energy_chains    = {t: (load_chain(t), ENERGY_TICKERS[t]) for t in ENERGY_FUTURES_TICKERS}
+    coal_ct_df       = load_coal_ct()
+    energy_ct_df     = load_energy_ct()
+    physical_coal_df = load_physical_coal_prices()
 
     # ── Tabs ──────────────────────────────────────────────────────────────────
-    tab_summary, tab_coal, tab_energy, tab_macro = st.tabs(["📋  Summary", "🪨  Coal", "🛢️  Energy", "🌍  Macro"])
+    tab_summary, tab_coal, tab_phys, tab_energy, tab_macro = st.tabs([
+        "📋  Summary", "🪨  Coal", "⛏️  Physical Coal", "🛢️  Energy", "🌍  Macro"
+    ])
 
     # ════════════════════════════════════════════════════════════════════════
     # SUMMARY TAB
     # ════════════════════════════════════════════════════════════════════════
     with tab_summary:
+
+        # ── Physical Coal ─────────────────────────────────────────────────
+        st.markdown("#### ⛏️ Physical Coal")
+        for section_name, tickers in PHYSICAL_COAL_SECTIONS.items():
+            st.caption(section_name)
+            phys_items = [(t, PHYSICAL_COAL_TICKERS[t]) for t in tickers if t in PHYSICAL_COAL_TICKERS]
+            phys_cols = st.columns(len(phys_items))
+            for col, (ticker, cfg) in zip(phys_cols, phys_items):
+                with col:
+                    if not physical_coal_df.empty and ticker in physical_coal_df.columns:
+                        s = physical_coal_df[ticker].dropna()
+                        if len(s) >= 2:
+                            val, prev = s.iloc[-1], s.iloc[-2]
+                            st.metric(cfg["short"], f"{val:.2f}", f"{val - prev:+.2f}")
+                        else:
+                            st.metric(cfg["short"], "—")
+                    else:
+                        st.metric(cfg["short"], "—")
+
+        st.divider()
 
         # ── Coal ──────────────────────────────────────────────────────────
         st.markdown("#### 🪨 Coal")
@@ -695,6 +729,45 @@ def main():
         st.divider()
         st.markdown("#### Futures Contract Table (CT)")
         render_coal_ct_table(coal_ct_df)
+
+    # ════════════════════════════════════════════════════════════════════════
+    # PHYSICAL COAL TAB
+    # ════════════════════════════════════════════════════════════════════════
+    with tab_phys:
+        for section_name, tickers in PHYSICAL_COAL_SECTIONS.items():
+            st.markdown(f"#### {section_name}")
+
+            # KPI row for this section
+            section_items = [
+                (t, PHYSICAL_COAL_TICKERS[t])
+                for t in tickers if t in PHYSICAL_COAL_TICKERS
+            ]
+            section_cols = st.columns(len(section_items))
+            for col, (ticker, cfg) in zip(section_cols, section_items):
+                with col:
+                    if not physical_coal_df.empty and ticker in physical_coal_df.columns:
+                        s = physical_coal_df[ticker].dropna()
+                        if len(s) >= 2:
+                            val, prev = s.iloc[-1], s.iloc[-2]
+                            st.metric(cfg["short"], f"{val:.2f}", f"{val - prev:+.2f}")
+                        else:
+                            st.metric(cfg["short"], "—")
+                    else:
+                        st.metric(cfg["short"], "—")
+
+            st.markdown("#### Price History")
+            for i, ticker in enumerate(tickers):
+                if ticker not in PHYSICAL_COAL_TICKERS:
+                    continue
+                cfg = PHYSICAL_COAL_TICKERS[ticker]
+                st.plotly_chart(
+                    price_chart(physical_coal_df, ticker, cfg["name"],
+                                cfg["color"], date_from, height=380),
+                    use_container_width=True, config=_CHART_CFG,
+                    key=f"chart_phys_{section_name}_{i}",
+                )
+
+            st.divider()
 
     # ════════════════════════════════════════════════════════════════════════
     # ENERGY TAB
