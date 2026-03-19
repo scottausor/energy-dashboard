@@ -623,14 +623,14 @@ def main():
                         COAL_TICKERS["XO1 Comdty"]["name"],
                         COAL_TICKERS["XO1 Comdty"]["color"], date_from,
                         height=420),
-            use_container_width=True, config=_CHART_CFG,
+            use_container_width=True, config=_CHART_CFG, key="chart_xo1",
         )
         st.plotly_chart(
             price_chart(coal_df, "XA1 Comdty",
                         COAL_TICKERS["XA1 Comdty"]["name"],
                         COAL_TICKERS["XA1 Comdty"]["color"], date_from,
                         height=420),
-            use_container_width=True, config=_CHART_CFG,
+            use_container_width=True, config=_CHART_CFG, key="chart_xa1",
         )
         st.plotly_chart(
             spread_chart(
@@ -639,19 +639,19 @@ def main():
                 COAL_SPREAD["name"], COAL_SPREAD["color"], date_from,
                 height=420,
             ),
-            use_container_width=True, config=_CHART_CFG,
+            use_container_width=True, config=_CHART_CFG, key="chart_spread",
         )
         st.plotly_chart(
             price_chart(coal_df, "XW1 Comdty",
                         COAL_TICKERS["XW1 Comdty"]["name"],
                         COAL_TICKERS["XW1 Comdty"]["color"], date_from,
                         height=420),
-            use_container_width=True, config=_CHART_CFG,
+            use_container_width=True, config=_CHART_CFG, key="chart_xw1",
         )
 
         st.divider()
         st.markdown("#### Forward Curves (CCRV)")
-        st.plotly_chart(forward_curve_chart(coal_chains), use_container_width=True, config=_CHART_CFG)
+        st.plotly_chart(forward_curve_chart(coal_chains), use_container_width=True, config=_CHART_CFG, key="chart_coal_fwd")
 
         st.divider()
         st.markdown("#### Futures Contract Table (CT)")
@@ -669,45 +669,45 @@ def main():
             price_chart(energy_df, "CO1 Comdty",
                         ENERGY_TICKERS["CO1 Comdty"]["name"],
                         ENERGY_TICKERS["CO1 Comdty"]["color"], date_from, height=420),
-            use_container_width=True, config=_CHART_CFG,
+            use_container_width=True, config=_CHART_CFG, key="chart_co1",
         )
         st.plotly_chart(
             price_chart(energy_df, "CL1 Comdty",
                         ENERGY_TICKERS["CL1 Comdty"]["name"],
                         ENERGY_TICKERS["CL1 Comdty"]["color"], date_from, height=420),
-            use_container_width=True, config=_CHART_CFG,
+            use_container_width=True, config=_CHART_CFG, key="chart_cl1",
         )
         st.plotly_chart(
-            price_chart(energy_df, "TTFGBOM Comdty",
-                        ENERGY_TICKERS["TTFGBOM Comdty"]["name"],
-                        ENERGY_TICKERS["TTFGBOM Comdty"]["color"], date_from, height=420),
-            use_container_width=True, config=_CHART_CFG,
+            price_chart(energy_df, "TTFG1MON BCFV Index",
+                        ENERGY_TICKERS["TTFG1MON BCFV Index"]["name"],
+                        ENERGY_TICKERS["TTFG1MON BCFV Index"]["color"], date_from, height=420),
+            use_container_width=True, config=_CHART_CFG, key="chart_ttf",
         )
         st.plotly_chart(
             price_chart(energy_df, "NG1 Comdty",
                         ENERGY_TICKERS["NG1 Comdty"]["name"],
                         ENERGY_TICKERS["NG1 Comdty"]["color"], date_from, height=420),
-            use_container_width=True, config=_CHART_CFG,
+            use_container_width=True, config=_CHART_CFG, key="chart_ng1",
         )
         st.plotly_chart(
-            price_chart(energy_df, "JKL1 Comdty",
-                        ENERGY_TICKERS["JKL1 Comdty"]["name"],
-                        ENERGY_TICKERS["JKL1 Comdty"]["color"], date_from, height=420),
-            use_container_width=True, config=_CHART_CFG,
+            price_chart(energy_df, "AJKMM1 Comdty",
+                        ENERGY_TICKERS["AJKMM1 Comdty"]["name"],
+                        ENERGY_TICKERS["AJKMM1 Comdty"]["color"], date_from, height=420),
+            use_container_width=True, config=_CHART_CFG, key="chart_jkm",
         )
 
         st.divider()
         st.markdown("#### Forward Curves (CCRV)")
 
         oil_tickers = ["CO1 Comdty", "CL1 Comdty"]
-        gas_tickers  = ["NG1 Comdty", "JKL1 Comdty"]
+        gas_tickers  = ["NG1 Comdty", "AJKMM1 Comdty"]
         oil_chains  = {t: energy_chains[t] for t in oil_tickers if t in energy_chains}
         gas_chains  = {t: energy_chains[t] for t in gas_tickers if t in energy_chains}
 
         st.markdown("**Oil — Brent & WTI**")
-        st.plotly_chart(forward_curve_chart(oil_chains, height=380), use_container_width=True, config=_CHART_CFG)
+        st.plotly_chart(forward_curve_chart(oil_chains, height=380), use_container_width=True, config=_CHART_CFG, key="chart_oil_fwd")
         st.markdown("**Gas — Henry Hub & JKM**")
-        st.plotly_chart(forward_curve_chart(gas_chains, height=380), use_container_width=True, config=_CHART_CFG)
+        st.plotly_chart(forward_curve_chart(gas_chains, height=380), use_container_width=True, config=_CHART_CFG, key="chart_gas_fwd")
 
         st.divider()
         st.markdown("#### Futures Contract Table (CT)")
@@ -727,26 +727,26 @@ def main():
                 price_chart(macro_df, "USDZAR Curncy",
                             MACRO_TICKERS["USDZAR Curncy"]["name"],
                             MACRO_TICKERS["USDZAR Curncy"]["color"], date_from),
-                use_container_width=True, config=_CHART_CFG,
+                use_container_width=True, config=_CHART_CFG, key="chart_usdzar",
             )
         with c2:
             st.plotly_chart(
                 price_chart(macro_df, "XAU Curncy",
                             MACRO_TICKERS["XAU Curncy"]["name"],
                             MACRO_TICKERS["XAU Curncy"]["color"], date_from),
-                use_container_width=True, config=_CHART_CFG,
+                use_container_width=True, config=_CHART_CFG, key="chart_xau",
             )
         with c3:
             st.plotly_chart(
                 price_chart(macro_df, "XBTUSD Curncy",
                             MACRO_TICKERS["XBTUSD Curncy"]["name"],
                             MACRO_TICKERS["XBTUSD Curncy"]["color"], date_from),
-                use_container_width=True, config=_CHART_CFG,
+                use_container_width=True, config=_CHART_CFG, key="chart_btc",
             )
 
         st.divider()
         st.markdown("#### US Treasury Actives Yield Curve (GC)")
-        st.plotly_chart(treasury_curve_chart(tsy_df), use_container_width=True, config=_CHART_CFG)
+        st.plotly_chart(treasury_curve_chart(tsy_df), use_container_width=True, config=_CHART_CFG, key="chart_treasury")
 
 
 if __name__ == "__main__":

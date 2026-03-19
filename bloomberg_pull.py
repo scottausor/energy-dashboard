@@ -67,6 +67,14 @@ def bbg_history(tickers: list[str]) -> pd.DataFrame:
         )
         # Flatten multi-level columns: keep only the ticker level
         raw.columns = [col[0] if isinstance(col, tuple) else col for col in raw.columns]
+        # Bloomberg sometimes appends out-of-order holiday fill rows at the end
+        # (e.g. Christmas, New Year's, US market holidays) for certain tickers.
+        # Sort, deduplicate, and strip anything beyond today to clean this up.
+        raw.index = pd.to_datetime(raw.index)
+        raw = raw.sort_index()
+        raw = raw[~raw.index.duplicated(keep="last")]
+        raw = raw[raw.index <= pd.Timestamp(datetime.today().date())]
+        raw = raw.replace(0, pd.NA)   # drop Bloomberg zero-fills (e.g. holidays)
         return raw
     except Exception as exc:
         log.error(f"  bbg_history failed: {exc}")
@@ -127,7 +135,7 @@ DEMO_SEED_PRICES = {
     "XO1 Comdty": 115.0, "XA1 Comdty": 130.0, "XW1 Comdty": 118.0,
     # Energy
     "CO1 Comdty": 82.0, "CL1 Comdty": 78.0,
-    "TTFGBOM Comdty": 35.0, "NG1 Comdty": 2.5, "JKL1 Comdty": 12.5,
+    "TTFG1MON BCFV Index": 35.0, "NG1 Comdty": 2.5, "AJKMM1 Comdty": 12.5,
     # Macro
     "USDZAR Curncy": 18.50, "XAU Curncy": 2050.0, "XBTUSD Curncy": 62000.0,
     # Treasuries (yields)

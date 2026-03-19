@@ -43,11 +43,11 @@ COAL_CT_CONTRACTS = {
 
 # ── Energy Benchmarks ──────────────────────────────────────────────────────────
 ENERGY_TICKERS = {
-    "CO1 Comdty":    {"name": "Brent Crude",          "short": "Brent",   "color": "#2A9D8F"},
-    "CL1 Comdty":    {"name": "WTI Crude",            "short": "WTI",     "color": "#457B9D"},
-    "TTFGBOM Comdty":{"name": "TTF Natural Gas",      "short": "TTF",     "color": "#1D3557"},
-    "NG1 Comdty":    {"name": "Henry Hub Natural Gas", "short": "HH Gas",  "color": "#48CAE4"},
-    "JKL1 Comdty":   {"name": "JKM Asia LNG (DES Japan-Korea)", "short": "JKM", "color": "#023E8A"},
+    "CO1 Comdty":          {"name": "Brent Crude",          "short": "Brent",   "color": "#2A9D8F"},
+    "CL1 Comdty":          {"name": "WTI Crude",            "short": "WTI",     "color": "#457B9D"},
+    "TTFG1MON BCFV Index": {"name": "TTF Natural Gas",      "short": "TTF",     "color": "#1D3557"},
+    "NG1 Comdty":          {"name": "Henry Hub Natural Gas", "short": "HH Gas",  "color": "#48CAE4"},
+    "AJKMM1 Comdty":       {"name": "JKM Asia LNG (DES Japan-Korea)", "short": "JKM", "color": "#023E8A"},
 }
 
 ENERGY_FUTURES_TICKERS = list(ENERGY_TICKERS.keys())
@@ -67,7 +67,7 @@ ENERGY_CT_CONTRACTS = {
     },
     "JKM Asia LNG": {
         "color":   "#023E8A",
-        "Monthly": [f"JKL{i} COMB Comdty" for i in range(1, 19)],
+        "Monthly": [f"AJKMM{i} Comdty" for i in range(1, 19)],
     },
     "Henry Hub Gas": {
         "color":   "#48CAE4",
@@ -75,7 +75,7 @@ ENERGY_CT_CONTRACTS = {
     },
     "TTF Natural Gas": {
         "color":   "#1D3557",
-        "Monthly": ["TTFGBOM BCFV Index"] + [f"TTFG{i}MON BCFV Index" for i in range(1, 18)],
+        "Monthly": [f"TTFG{i}MON BCFV Index" for i in range(1, 19)],
     },
 }
 
