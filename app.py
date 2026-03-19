@@ -636,18 +636,22 @@ def main():
         for section_name, tickers in PHYSICAL_COAL_SECTIONS.items():
             st.caption(section_name)
             phys_items = [(t, PHYSICAL_COAL_TICKERS[t]) for t in tickers if t in PHYSICAL_COAL_TICKERS]
-            phys_cols = st.columns(len(phys_items))
-            for col, (ticker, cfg) in zip(phys_cols, phys_items):
-                with col:
-                    if not physical_coal_df.empty and ticker in physical_coal_df.columns:
-                        s = physical_coal_df[ticker].dropna()
-                        if len(s) >= 2:
-                            val, prev = s.iloc[-1], s.iloc[-2]
-                            st.metric(cfg["name"], f"{val:.2f}", f"{val - prev:+.2f}")
+            # Up to 4 cards per row
+            CARDS_PER_ROW = 4
+            for row_start in range(0, len(phys_items), CARDS_PER_ROW):
+                row_items = phys_items[row_start:row_start + CARDS_PER_ROW]
+                phys_cols = st.columns(len(row_items))
+                for col, (ticker, cfg) in zip(phys_cols, row_items):
+                    with col:
+                        if not physical_coal_df.empty and ticker in physical_coal_df.columns:
+                            s = physical_coal_df[ticker].dropna()
+                            if len(s) >= 2:
+                                val, prev = s.iloc[-1], s.iloc[-2]
+                                st.metric(cfg["name"], f"{val:.2f}", f"{val - prev:+.2f}")
+                            else:
+                                st.metric(cfg["name"], "—")
                         else:
                             st.metric(cfg["name"], "—")
-                    else:
-                        st.metric(cfg["name"], "—")
 
         st.divider()
 
@@ -748,33 +752,39 @@ def main():
 
             valid = [t for t in tickers if t in PHYSICAL_COAL_TICKERS]
 
-            # KPI row — full name as label
-            kpi_cols = st.columns(len(valid))
-            for col, ticker in zip(kpi_cols, valid):
-                cfg = PHYSICAL_COAL_TICKERS[ticker]
-                with col:
-                    if not physical_coal_df.empty and ticker in physical_coal_df.columns:
-                        s = physical_coal_df[ticker].dropna()
-                        if len(s) >= 2:
-                            val, prev = s.iloc[-1], s.iloc[-2]
-                            st.metric(cfg["name"], f"{val:.2f}", f"{val - prev:+.2f}")
+            # KPI row — full name as label, up to 4 per row
+            CARDS_PER_ROW = 4
+            for row_start in range(0, len(valid), CARDS_PER_ROW):
+                row_tickers = valid[row_start:row_start + CARDS_PER_ROW]
+                kpi_cols = st.columns(len(row_tickers))
+                for col, ticker in zip(kpi_cols, row_tickers):
+                    cfg = PHYSICAL_COAL_TICKERS[ticker]
+                    with col:
+                        if not physical_coal_df.empty and ticker in physical_coal_df.columns:
+                            s = physical_coal_df[ticker].dropna()
+                            if len(s) >= 2:
+                                val, prev = s.iloc[-1], s.iloc[-2]
+                                st.metric(cfg["name"], f"{val:.2f}", f"{val - prev:+.2f}")
+                            else:
+                                st.metric(cfg["name"], "—")
                         else:
                             st.metric(cfg["name"], "—")
-                    else:
-                        st.metric(cfg["name"], "—")
 
-            # Charts — all on the same row
+            # Charts — up to 3 per row to keep them readable
             st.markdown("#### Price History")
-            chart_cols = st.columns(len(valid))
-            for col, ticker, i in zip(chart_cols, valid, range(len(valid))):
-                cfg = PHYSICAL_COAL_TICKERS[ticker]
-                with col:
-                    st.plotly_chart(
-                        price_chart(physical_coal_df, ticker, cfg["name"],
-                                    cfg["color"], date_from, height=340),
-                        use_container_width=True, config=_CHART_CFG,
-                        key=f"chart_phys_{section_name}_{i}",
-                    )
+            CHARTS_PER_ROW = 3
+            for row_start in range(0, len(valid), CHARTS_PER_ROW):
+                row_tickers = valid[row_start:row_start + CHARTS_PER_ROW]
+                chart_cols = st.columns(len(row_tickers))
+                for col, ticker in zip(chart_cols, row_tickers):
+                    cfg = PHYSICAL_COAL_TICKERS[ticker]
+                    with col:
+                        st.plotly_chart(
+                            price_chart(physical_coal_df, ticker, cfg["name"],
+                                        cfg["color"], date_from, height=300),
+                            use_container_width=True, config=_CHART_CFG,
+                            key=f"chart_phys_{section_name}_{ticker}",
+                        )
 
             st.divider()
 

@@ -137,8 +137,14 @@ DEMO_SEED_PRICES = {
     # Energy
     "CO1 Comdty": 82.0, "CL1 Comdty": 78.0,
     "TTFG1MON BCFV Index": 35.0, "NG1 Comdty": 2.5, "AJKMM1 Comdty": 12.5,
-    # Physical Coal (Argus / Platts)
-    "CO03C001 Index": 108.0, "CO03C008 Index": 95.0, "NACI0004 Index": 102.0,
+    # Physical Coal — Richards Bay
+    "CO03C001 Index": 108.0, "CO03C008 Index": 95.0,
+    "CO03C005 Index": 93.0,  "CO01C015 Index": 85.0,
+    # Physical Coal — ARA
+    "CO22C015 Index": 122.0, "CO20C017 Index": 120.0, "CO24C069 Index": 112.0,
+    # Physical Coal — Export Markets
+    "NACI00B4 Index": 105.0, "NACI00AD Index": 103.0,
+    "NACI019C Index": 100.0, "NACI0137 Index": 115.0,
     # Macro
     "USDZAR Curncy": 18.50, "XAU Curncy": 2050.0, "XBTUSD Curncy": 62000.0,
     # Treasuries (yields)

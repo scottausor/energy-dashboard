@@ -43,15 +43,35 @@ COAL_CT_CONTRACTS = {
 
 # ── Physical Coal (Argus / Platts assessments) ─────────────────────────────────
 PHYSICAL_COAL_TICKERS = {
-    "CO03C001 Index": {"name": "Argus – Daily RB1", "short": "RB1", "color": "#F4A261"},
-    "CO03C008 Index": {"name": "Argus – Daily RB2", "short": "RB2", "color": "#E76F51"},
-    "NACI0004 Index": {"name": "Platts – Daily RB3", "short": "RB3", "color": "#E9C46A"},
+    # ── Richards Bay ────────────────────────────────────────────────────────
+    "CO03C001 Index": {"name": "Argus – Daily RB1",         "short": "RB1 Daily",  "color": "#F4A261"},
+    "CO03C008 Index": {"name": "Argus – Daily RB2",         "short": "RB2 Daily",  "color": "#E76F51"},
+    "CO03C005 Index": {"name": "Argus – Weekly RB3",        "short": "RB3 Weekly", "color": "#E9C46A"},
+    "CO01C015 Index": {"name": "Argus – Weekly RB4",        "short": "RB4 Weekly", "color": "#F3C677"},
+    # ── ARA ─────────────────────────────────────────────────────────────────
+    "CO22C015 Index": {"name": "Argus – Daily ARA 6,000 kCal",  "short": "ARA 6k Daily",  "color": "#2A9D8F"},
+    "CO20C017 Index": {"name": "Argus – Weekly ARA 6,000 kCal", "short": "ARA 6k Weekly",  "color": "#48CAE4"},
+    "CO24C069 Index": {"name": "Argus – Daily ARA 5,700 kCal",  "short": "ARA 5.7k Daily", "color": "#0096C7"},
+    # ── Export Markets ───────────────────────────────────────────────────────
+    "NACI00B4 Index": {"name": "Platts CFR West Coast India 5,500 kCal", "short": "India W Coast", "color": "#8338EC"},
+    "NACI00AD Index": {"name": "Platts CFR East Coast India 5,500 kCal", "short": "India E Coast", "color": "#7209B7"},
+    "NACI019C Index": {"name": "Platts CFR Pakistan 5,500 kCal",         "short": "Pakistan",      "color": "#B5179E"},
+    "NACI0137 Index": {"name": "Platts CFR South China 5,500 kCal",      "short": "S China",       "color": "#F72585"},
 }
 
 # Sections group tickers into named sub-sections within the Physical Coal tab.
-# Add new sections here (e.g. "Newcastle", "ARA") as the dashboard grows.
 PHYSICAL_COAL_SECTIONS = {
-    "Richards Bay": ["CO03C001 Index", "CO03C008 Index", "NACI0004 Index"],
+    "Richards Bay": [
+        "CO03C001 Index", "CO03C008 Index",
+        "CO03C005 Index", "CO01C015 Index",
+    ],
+    "ARA": [
+        "CO22C015 Index", "CO20C017 Index", "CO24C069 Index",
+    ],
+    "Export Markets": [
+        "NACI00B4 Index", "NACI00AD Index",
+        "NACI019C Index", "NACI0137 Index",
+    ],
 }
 
 # Physical OTC swaps — displayed as a side-by-side table + forward curve
@@ -60,29 +80,31 @@ PHYSICAL_COAL_SWAPS = {
     "RB1 Swaps": {
         "color": "#F4A261",
         "contracts": [
-            ("Month 1",   "CO01C001 Index"),
-            ("Quarter 1", "CO01C002 Index"),
-            ("Quarter 2", "CO01C003 Index"),
-            ("Quarter 3", "CO01C004 Index"),
-            ("Quarter 4", "CO01C005 Index"),
-            ("Quarter 5", "CO01C013 Index"),
-            ("Year 1",    "CO01C006 Index"),
-            ("Year 2",    "CO01C007 Index"),
-            ("Year 3",    "CO01C008 Index"),
+            ("Current Month", "CO03C001 Index"),
+            ("Month 1",       "CO01C001 Index"),
+            ("Quarter 1",     "CO01C002 Index"),
+            ("Quarter 2",     "CO01C003 Index"),
+            ("Quarter 3",     "CO01C004 Index"),
+            ("Quarter 4",     "CO01C005 Index"),
+            ("Quarter 5",     "CO01C013 Index"),
+            ("Year 1",        "CO01C006 Index"),
+            ("Year 2",        "CO01C007 Index"),
+            ("Year 3",        "CO01C008 Index"),
         ],
     },
     "ARA CIF Swaps": {
-        "color": "#E76F51",
+        "color": "#2A9D8F",
         "contracts": [
-            ("Month 1",   "CO22C001 Index"),
-            ("Quarter 1", "CO22C002 Index"),
-            ("Quarter 2", "CO22C003 Index"),
-            ("Quarter 3", "CO22C004 Index"),
-            ("Quarter 4", "CO22C005 Index"),
-            ("Quarter 5", "CO22C017 Index"),
-            ("Year 1",    "CO22C006 Index"),
-            ("Year 2",    "CO22C007 Index"),
-            ("Year 3",    "CO22C008 Index"),
+            ("Current Month", "CO22C015 Index"),
+            ("Month 1",       "CO22C001 Index"),
+            ("Quarter 1",     "CO22C002 Index"),
+            ("Quarter 2",     "CO22C003 Index"),
+            ("Quarter 3",     "CO22C004 Index"),
+            ("Quarter 4",     "CO22C005 Index"),
+            ("Quarter 5",     "CO22C017 Index"),
+            ("Year 1",        "CO22C006 Index"),
+            ("Year 2",        "CO22C007 Index"),
+            ("Year 3",        "CO22C008 Index"),
         ],
     },
 }
