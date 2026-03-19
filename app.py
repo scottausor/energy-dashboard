@@ -634,11 +634,11 @@ def main():
                         s = physical_coal_df[ticker].dropna()
                         if len(s) >= 2:
                             val, prev = s.iloc[-1], s.iloc[-2]
-                            st.metric(cfg["short"], f"{val:.2f}", f"{val - prev:+.2f}")
+                            st.metric(cfg["name"], f"{val:.2f}", f"{val - prev:+.2f}")
                         else:
-                            st.metric(cfg["short"], "—")
+                            st.metric(cfg["name"], "—")
                     else:
-                        st.metric(cfg["short"], "—")
+                        st.metric(cfg["name"], "—")
 
         st.divider()
 
@@ -737,35 +737,35 @@ def main():
         for section_name, tickers in PHYSICAL_COAL_SECTIONS.items():
             st.markdown(f"#### {section_name}")
 
-            # KPI row for this section
-            section_items = [
-                (t, PHYSICAL_COAL_TICKERS[t])
-                for t in tickers if t in PHYSICAL_COAL_TICKERS
-            ]
-            section_cols = st.columns(len(section_items))
-            for col, (ticker, cfg) in zip(section_cols, section_items):
+            valid = [t for t in tickers if t in PHYSICAL_COAL_TICKERS]
+
+            # KPI row — full name as label
+            kpi_cols = st.columns(len(valid))
+            for col, ticker in zip(kpi_cols, valid):
+                cfg = PHYSICAL_COAL_TICKERS[ticker]
                 with col:
                     if not physical_coal_df.empty and ticker in physical_coal_df.columns:
                         s = physical_coal_df[ticker].dropna()
                         if len(s) >= 2:
                             val, prev = s.iloc[-1], s.iloc[-2]
-                            st.metric(cfg["short"], f"{val:.2f}", f"{val - prev:+.2f}")
+                            st.metric(cfg["name"], f"{val:.2f}", f"{val - prev:+.2f}")
                         else:
-                            st.metric(cfg["short"], "—")
+                            st.metric(cfg["name"], "—")
                     else:
-                        st.metric(cfg["short"], "—")
+                        st.metric(cfg["name"], "—")
 
+            # Charts — all on the same row
             st.markdown("#### Price History")
-            for i, ticker in enumerate(tickers):
-                if ticker not in PHYSICAL_COAL_TICKERS:
-                    continue
+            chart_cols = st.columns(len(valid))
+            for col, ticker, i in zip(chart_cols, valid, range(len(valid))):
                 cfg = PHYSICAL_COAL_TICKERS[ticker]
-                st.plotly_chart(
-                    price_chart(physical_coal_df, ticker, cfg["name"],
-                                cfg["color"], date_from, height=380),
-                    use_container_width=True, config=_CHART_CFG,
-                    key=f"chart_phys_{section_name}_{i}",
-                )
+                with col:
+                    st.plotly_chart(
+                        price_chart(physical_coal_df, ticker, cfg["name"],
+                                    cfg["color"], date_from, height=340),
+                        use_container_width=True, config=_CHART_CFG,
+                        key=f"chart_phys_{section_name}_{i}",
+                    )
 
             st.divider()
 
