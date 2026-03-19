@@ -27,6 +27,7 @@ from config import (
     ENERGY_TICKERS, ENERGY_FUTURES_TICKERS, ENERGY_CT_CONTRACTS,
     MACRO_TICKERS, TREASURY_TICKERS,
     PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SECTIONS, PHYSICAL_COAL_SWAPS,
+    PHYSICAL_COAL_RB_ARGUS, PHYSICAL_COAL_ARA, PHYSICAL_COAL_EXPORT,
     DATA_DIR,
 )
 
@@ -747,133 +748,167 @@ def main():
     # PHYSICAL COAL TAB
     # ════════════════════════════════════════════════════════════════════════
     with tab_phys:
-        for section_name, tickers in PHYSICAL_COAL_SECTIONS.items():
-            st.markdown(f"#### {section_name}")
 
-            valid = [t for t in tickers if t in PHYSICAL_COAL_TICKERS]
-
-            # KPI row — full name as label, up to 4 per row
-            CARDS_PER_ROW = 4
-            for row_start in range(0, len(valid), CARDS_PER_ROW):
-                row_tickers = valid[row_start:row_start + CARDS_PER_ROW]
-                kpi_cols = st.columns(len(row_tickers))
-                for col, ticker in zip(kpi_cols, row_tickers):
-                    cfg = PHYSICAL_COAL_TICKERS[ticker]
-                    with col:
-                        if not physical_coal_df.empty and ticker in physical_coal_df.columns:
-                            s = physical_coal_df[ticker].dropna()
-                            if len(s) >= 2:
-                                val, prev = s.iloc[-1], s.iloc[-2]
-                                st.metric(cfg["name"], f"{val:.2f}", f"{val - prev:+.2f}")
-                            else:
-                                st.metric(cfg["name"], "—")
-                        else:
-                            st.metric(cfg["name"], "—")
-
-            # Charts — up to 3 per row to keep them readable
-            st.markdown("#### Price History")
-            CHARTS_PER_ROW = 3
-            for row_start in range(0, len(valid), CHARTS_PER_ROW):
-                row_tickers = valid[row_start:row_start + CHARTS_PER_ROW]
-                chart_cols = st.columns(len(row_tickers))
-                for col, ticker in zip(chart_cols, row_tickers):
-                    cfg = PHYSICAL_COAL_TICKERS[ticker]
-                    with col:
-                        st.plotly_chart(
-                            price_chart(physical_coal_df, ticker, cfg["name"],
-                                        cfg["color"], date_from, height=300),
-                            use_container_width=True, config=_CHART_CFG,
-                            key=f"chart_phys_{section_name}_{ticker}",
-                        )
-
-            st.divider()
-
-        # ── Physical Futures (OTC Swaps) ──────────────────────────────────
-        st.markdown("#### Physical Futures")
+        def _phys_metric(ticker):
+            """Render a single metric card for a physical coal ticker."""
+            cfg = PHYSICAL_COAL_TICKERS[ticker]
+            if not physical_coal_df.empty and ticker in physical_coal_df.columns:
+                s = physical_coal_df[ticker].dropna()
+                if len(s) >= 2:
+                    val, prev = s.iloc[-1], s.iloc[-2]
+                    st.metric(cfg["name"], f"{val:.2f}", f"{val - prev:+.2f}")
+                    return
+            st.metric(cfg["name"], "—")
 
         def colour_chg(val):
             if pd.isna(val) or not isinstance(val, (int, float)):
                 return ""
             return "color: #00CC96" if val > 0 else "color: #EF553B" if val < 0 else ""
 
+        # ── 1. Original Richards Bay (RB1 Argus, RB2 Argus, RB3 Platts) ──
+        st.markdown("#### Richards Bay")
+        rb_orig = [t for t in PHYSICAL_COAL_SECTIONS["Richards Bay"] if t in PHYSICAL_COAL_TICKERS]
+        kpi_cols = st.columns(len(rb_orig))
+        for col, ticker in zip(kpi_cols, rb_orig):
+            with col:
+                _phys_metric(ticker)
+
+        chart_cols = st.columns(len(rb_orig))
+        for col, ticker in zip(chart_cols, rb_orig):
+            cfg = PHYSICAL_COAL_TICKERS[ticker]
+            with col:
+                st.plotly_chart(
+                    price_chart(physical_coal_df, ticker, cfg["name"],
+                                cfg["color"], date_from, height=300),
+                    use_container_width=True, config=_CHART_CFG,
+                    key=f"chart_phys_top_{ticker}",
+                )
+
+        st.divider()
+
+        # ── 2. Physical Futures (OTC Swaps table + forward curve) ─────────
+        st.markdown("#### Physical Futures")
+
         if not physical_swaps_df.empty:
             tbl_col, chart_col = st.columns([1, 1])
 
             with tbl_col:
-                # Build side-by-side table: rows = contract label, cols = series
                 series_names = list(PHYSICAL_COAL_SWAPS.keys())
-
-                # Collect data per series keyed by label
-                series_data = {}
+                series_data  = {}
                 for sname in series_names:
                     sub = physical_swaps_df[physical_swaps_df["series"] == sname]
                     series_data[sname] = sub.set_index("label")
 
-                # Determine row order from first series definition
                 row_labels = [lbl for lbl, _ in list(PHYSICAL_COAL_SWAPS.values())[0]["contracts"]]
-
                 table_rows = []
                 for lbl in row_labels:
                     row = {"Contract": lbl}
                     for sname in series_names:
                         df_s = series_data.get(sname, pd.DataFrame())
                         if lbl in df_s.index:
-                            last = df_s.loc[lbl, "px_last"]
-                            chg  = df_s.loc[lbl, "chg_net_1d"]
-                            row[f"{sname} Last"] = last if pd.notna(last) else None
-                            row[f"{sname} Chg"]  = chg  if pd.notna(chg)  else None
+                            row[f"{sname} Last"] = df_s.loc[lbl, "px_last"]   if pd.notna(df_s.loc[lbl, "px_last"])   else None
+                            row[f"{sname} Chg"]  = df_s.loc[lbl, "chg_net_1d"] if pd.notna(df_s.loc[lbl, "chg_net_1d"]) else None
                         else:
                             row[f"{sname} Last"] = None
                             row[f"{sname} Chg"]  = None
                     table_rows.append(row)
 
                 tbl_df = pd.DataFrame(table_rows)
-
                 fmt = {}
                 subset_chg = []
                 for sname in series_names:
                     fmt[f"{sname} Last"] = "{:.2f}"
                     fmt[f"{sname} Chg"]  = "{:+.2f}"
                     subset_chg.append(f"{sname} Chg")
-
-                styled = (
-                    tbl_df.style
-                    .format(fmt, na_rep="—")
-                    .applymap(colour_chg, subset=subset_chg)
-                )
+                styled = (tbl_df.style
+                          .format(fmt, na_rep="—")
+                          .applymap(colour_chg, subset=subset_chg))
                 st.dataframe(styled, use_container_width=True, hide_index=True)
 
             with chart_col:
-                # Forward curve chart — one line per series
                 fig = go.Figure()
                 for sname, cfg in PHYSICAL_COAL_SWAPS.items():
-                    sub = physical_swaps_df[physical_swaps_df["series"] == sname]
-                    sub = sub.set_index("label")
-                    y_vals = [sub.loc[lbl, "px_last"] if lbl in sub.index else None
-                              for lbl in row_labels]
+                    sub = physical_swaps_df[physical_swaps_df["series"] == sname].set_index("label")
+                    y_vals = [sub.loc[lbl, "px_last"] if lbl in sub.index else None for lbl in row_labels]
                     fig.add_trace(go.Scatter(
-                        x=row_labels, y=y_vals,
-                        mode="lines+markers",
-                        name=sname,
+                        x=row_labels, y=y_vals, mode="lines+markers", name=sname,
                         line=dict(color=cfg["color"], width=2.5),
                         marker=dict(size=7, color=cfg["color"]),
                         hovertemplate=f"<b>{sname}</b><br>%{{x}}: %{{y:,.2f}}<extra></extra>",
                     ))
                 lo = _LAYOUT_BASE.copy()
                 lo.update(
-                    height=380,
-                    showlegend=True,
-                    legend=dict(x=0.01, y=0.99, bgcolor="rgba(0,0,0,0.45)",
-                                font=dict(size=11), borderwidth=0),
+                    height=380, showlegend=True,
+                    legend=dict(x=0.01, y=0.99, bgcolor="rgba(0,0,0,0.45)", font=dict(size=11)),
                     title=dict(text="<b>Physical Futures Curve</b>", font=dict(size=13)),
                     xaxis=dict(**_LAYOUT_BASE["xaxis"], title="Contract"),
                     yaxis=dict(**_LAYOUT_BASE["yaxis"], title="Price (USD/t)"),
                 )
                 fig.update_layout(**lo)
-                st.plotly_chart(fig, use_container_width=True, config=_CHART_CFG,
-                                key="chart_phys_swaps")
+                st.plotly_chart(fig, use_container_width=True, config=_CHART_CFG, key="chart_phys_swaps")
         else:
             st.info("No swap data yet. Run `python bloomberg_pull.py` to fetch.")
+
+        st.divider()
+
+        # ── 3. Argus RB 1–4: 2×2 cards  |  combined price history chart ──
+        st.markdown("#### Argus Richards Bay 1–4")
+        rb4_valid = [t for t in PHYSICAL_COAL_RB_ARGUS if t in PHYSICAL_COAL_TICKERS]
+        cards_col, hist_col = st.columns([1, 2])
+
+        with cards_col:
+            for pair_start in range(0, len(rb4_valid), 2):
+                pair = rb4_valid[pair_start:pair_start + 2]
+                row_cols = st.columns(len(pair))
+                for col, ticker in zip(row_cols, pair):
+                    with col:
+                        _phys_metric(ticker)
+
+        with hist_col:
+            fig = go.Figure()
+            for ticker in rb4_valid:
+                cfg = PHYSICAL_COAL_TICKERS[ticker]
+                if physical_coal_df.empty or ticker not in physical_coal_df.columns:
+                    continue
+                s = physical_coal_df[ticker].dropna()
+                s = s[s > 0].sort_index()
+                s = s[~s.index.duplicated(keep="last")]
+                s = s[s.index >= pd.Timestamp(date_from)]
+                if s.empty:
+                    continue
+                fig.add_trace(go.Scatter(
+                    x=s.index, y=s.values, mode="lines", name=cfg["short"],
+                    line=dict(color=cfg["color"], width=2), connectgaps=False,
+                    hovertemplate=f"<b>{cfg['name']}</b><br>%{{x|%d %b %Y}}  %{{y:,.2f}}<extra></extra>",
+                ))
+            lo = _LAYOUT_BASE.copy()
+            lo.update(
+                height=320, showlegend=True,
+                legend=dict(x=0.01, y=0.99, bgcolor="rgba(0,0,0,0.45)", font=dict(size=10)),
+                title=dict(text="<b>Argus RB 1–4 Price History</b>", font=dict(size=13)),
+            )
+            fig.update_layout(**lo)
+            st.plotly_chart(fig, use_container_width=True, config=_CHART_CFG, key="chart_rb_argus_all")
+
+        st.divider()
+
+        # ── 4. ARA — cards only ───────────────────────────────────────────
+        st.markdown("#### ARA")
+        ara_valid = [t for t in PHYSICAL_COAL_ARA if t in PHYSICAL_COAL_TICKERS]
+        ara_cols = st.columns(len(ara_valid))
+        for col, ticker in zip(ara_cols, ara_valid):
+            with col:
+                _phys_metric(ticker)
+
+        st.divider()
+
+        # ── 5. Export Markets — cards only ────────────────────────────────
+        st.markdown("#### Export Markets")
+        exp_valid = [t for t in PHYSICAL_COAL_EXPORT if t in PHYSICAL_COAL_TICKERS]
+        exp_cols = st.columns(len(exp_valid))
+        for col, ticker in zip(exp_cols, exp_valid):
+            with col:
+                _phys_metric(ticker)
 
     # ════════════════════════════════════════════════════════════════════════
     # ENERGY TAB

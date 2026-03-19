@@ -139,7 +139,8 @@ DEMO_SEED_PRICES = {
     "TTFG1MON BCFV Index": 35.0, "NG1 Comdty": 2.5, "AJKMM1 Comdty": 12.5,
     # Physical Coal — Richards Bay
     "CO03C001 Index": 108.0, "CO03C008 Index": 95.0,
-    "CO03C005 Index": 93.0,  "CO01C015 Index": 85.0,
+    "NACI0004 Index": 102.0, "CO03C005 Index": 93.0,
+    "CO01C015 Index": 85.0,
     # Physical Coal — ARA
     "CO22C015 Index": 122.0, "CO20C017 Index": 120.0, "CO24C069 Index": 112.0,
     # Physical Coal — Export Markets
