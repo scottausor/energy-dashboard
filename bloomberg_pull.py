@@ -26,7 +26,7 @@ from config import (
     COAL_CT_CONTRACTS, ENERGY_CT_CONTRACTS,
     TTF_CURVE_TICKERS,
     TREASURY_TICKERS, FUTURES_CHAIN_FIELDS, HISTORY_FIELD,
-    PHYSICAL_COAL_TICKERS,
+    PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SWAPS,
 )
 
 # ── Logging setup ──────────────────────────────────────────────────────────────
@@ -260,6 +260,51 @@ def demo_treasury_curve() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def bbg_physical_swaps(swap_config: dict) -> pd.DataFrame:
+    """
+    Pull current snapshot prices for physical OTC swap contracts.
+    Returns columns: series, label, ticker, px_last, chg_net_1d, chg_pct_1d
+    """
+    log.info("  bdp → physical coal swaps")
+    rows_meta, all_tickers = [], []
+    for series_name, cfg in swap_config.items():
+        for label, ticker in cfg["contracts"]:
+            rows_meta.append({"series": series_name, "label": label, "ticker": ticker})
+            all_tickers.append(ticker)
+    try:
+        prices = blp.bdp(tickers=all_tickers, flds=["PX_LAST", "CHG_NET_1D", "CHG_PCT_1D"])
+        prices.index.name = "ticker"
+        prices = prices.reset_index()
+        prices.columns = [c.lower() for c in prices.columns]
+        meta_df = pd.DataFrame(rows_meta)
+        return meta_df.merge(prices, on="ticker", how="left")
+    except Exception as exc:
+        log.error(f"  bbg_physical_swaps failed: {exc}")
+        return pd.DataFrame()
+
+
+def demo_physical_swaps(swap_config: dict) -> pd.DataFrame:
+    """Demo synthetic version of bbg_physical_swaps."""
+    SEED = {"RB1 Swaps": 108.0, "ARA CIF Swaps": 118.0}
+    rows = []
+    for series_name, cfg in swap_config.items():
+        base = SEED.get(series_name, 110.0)
+        rng = np.random.default_rng(abs(hash(series_name)) % (2**31))
+        price = base
+        for label, ticker in cfg["contracts"]:
+            price += rng.normal(0.3, 1.0)
+            price = max(price, base * 0.5)
+            rows.append({
+                "series":      series_name,
+                "label":       label,
+                "ticker":      ticker,
+                "px_last":     round(price, 2),
+                "chg_net_1d":  round(rng.normal(0, base * 0.004), 2),
+                "chg_pct_1d":  round(rng.normal(0, 0.35), 2),
+            })
+    return pd.DataFrame(rows)
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # Save helpers
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -335,10 +380,11 @@ def run():
     log.info(f"  Mode: {'LIVE (Bloomberg)' if BBG_OK else 'DEMO (synthetic)'}   ")
     log.info("════════════════════════════════════════")
 
-    fetch    = bbg_history            if BBG_OK else demo_history
-    chain    = bbg_futures_chain      if BBG_OK else demo_futures_chain
-    tsy      = bbg_treasury_curve     if BBG_OK else demo_treasury_curve
-    ct_pull  = bbg_explicit_contracts if BBG_OK else demo_explicit_contracts
+    fetch      = bbg_history            if BBG_OK else demo_history
+    chain      = bbg_futures_chain      if BBG_OK else demo_futures_chain
+    tsy        = bbg_treasury_curve     if BBG_OK else demo_treasury_curve
+    ct_pull    = bbg_explicit_contracts if BBG_OK else demo_explicit_contracts
+    swaps_pull = bbg_physical_swaps     if BBG_OK else demo_physical_swaps
 
     # 1 ── Coal prices ──────────────────────────────────────────────────────────
     log.info("[1/7] Coal historical prices")
@@ -351,6 +397,14 @@ def run():
     physical_coal_df = fetch(list(PHYSICAL_COAL_TICKERS.keys()))
     if not physical_coal_df.empty:
         save_history(physical_coal_df, "physical_coal_prices.csv")
+
+    # 1c ── Physical Coal OTC swaps ─────────────────────────────────────────────
+    log.info("[1c/7] Physical Coal OTC swaps (RB1 / ARA CIF)")
+    swaps_df = swaps_pull(PHYSICAL_COAL_SWAPS)
+    if not swaps_df.empty:
+        path = os.path.join(DATA_DIR, "prices", "physical_coal_swaps.csv")
+        swaps_df.to_csv(path, index=False)
+        log.info(f"  saved → {path}  rows={len(swaps_df)}")
 
     # 2 ── Coal CT explicit contracts ───────────────────────────────────────────
     log.info("[2/7] Coal CT contracts (Monthly / Quarterly / Yearly)")

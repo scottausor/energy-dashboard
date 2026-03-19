@@ -54,6 +54,39 @@ PHYSICAL_COAL_SECTIONS = {
     "Richards Bay": ["CO03C001 Index", "CO03C008 Index", "NACI0004 Index"],
 }
 
+# Physical OTC swaps — displayed as a side-by-side table + forward curve
+# Each entry: list of (row_label, bloomberg_ticker) tuples
+PHYSICAL_COAL_SWAPS = {
+    "RB1 Swaps": {
+        "color": "#F4A261",
+        "contracts": [
+            ("Month 1",   "CO01C001 Index"),
+            ("Quarter 1", "CO01C002 Index"),
+            ("Quarter 2", "CO01C003 Index"),
+            ("Quarter 3", "CO01C004 Index"),
+            ("Quarter 4", "CO01C005 Index"),
+            ("Quarter 5", "CO01C013 Index"),
+            ("Year 1",    "CO01C006 Index"),
+            ("Year 2",    "CO01C007 Index"),
+            ("Year 3",    "CO01C008 Index"),
+        ],
+    },
+    "ARA CIF Swaps": {
+        "color": "#E76F51",
+        "contracts": [
+            ("Month 1",   "CO22C001 Index"),
+            ("Quarter 1", "CO22C002 Index"),
+            ("Quarter 2", "CO22C003 Index"),
+            ("Quarter 3", "CO22C004 Index"),
+            ("Quarter 4", "CO22C005 Index"),
+            ("Quarter 5", "CO22C017 Index"),
+            ("Year 1",    "CO22C006 Index"),
+            ("Year 2",    "CO22C007 Index"),
+            ("Year 3",    "CO22C008 Index"),
+        ],
+    },
+}
+
 # ── Energy Benchmarks ──────────────────────────────────────────────────────────
 ENERGY_TICKERS = {
     "CO1 Comdty":          {"name": "Brent Crude",          "short": "Brent",   "color": "#2A9D8F"},

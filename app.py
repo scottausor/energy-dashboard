@@ -26,7 +26,7 @@ from config import (
     COAL_TICKERS, COAL_SPREAD, COAL_FUTURES_TICKERS, COAL_CT_CONTRACTS,
     ENERGY_TICKERS, ENERGY_FUTURES_TICKERS, ENERGY_CT_CONTRACTS,
     MACRO_TICKERS, TREASURY_TICKERS,
-    PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SECTIONS,
+    PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SECTIONS, PHYSICAL_COAL_SWAPS,
     DATA_DIR,
 )
 
@@ -127,6 +127,14 @@ def load_ttf_curve() -> pd.DataFrame:
 @st.cache_data(ttl=3600)
 def load_treasury() -> pd.DataFrame:
     path = os.path.join(DATA_DIR, "macro", "treasury_curve.csv")
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    return pd.read_csv(path)
+
+
+@st.cache_data(ttl=3600)
+def load_physical_coal_swaps() -> pd.DataFrame:
+    path = os.path.join(DATA_DIR, "prices", "physical_coal_swaps.csv")
     if not os.path.exists(path):
         return pd.DataFrame()
     return pd.read_csv(path)
@@ -610,7 +618,8 @@ def main():
     energy_chains    = {t: (load_chain(t), ENERGY_TICKERS[t]) for t in ENERGY_FUTURES_TICKERS}
     coal_ct_df       = load_coal_ct()
     energy_ct_df     = load_energy_ct()
-    physical_coal_df = load_physical_coal_prices()
+    physical_coal_df   = load_physical_coal_prices()
+    physical_swaps_df  = load_physical_coal_swaps()
 
     # ── Tabs ──────────────────────────────────────────────────────────────────
     tab_summary, tab_coal, tab_phys, tab_energy, tab_macro = st.tabs([
@@ -768,6 +777,93 @@ def main():
                     )
 
             st.divider()
+
+        # ── Physical Futures (OTC Swaps) ──────────────────────────────────
+        st.markdown("#### Physical Futures")
+
+        def colour_chg(val):
+            if pd.isna(val) or not isinstance(val, (int, float)):
+                return ""
+            return "color: #00CC96" if val > 0 else "color: #EF553B" if val < 0 else ""
+
+        if not physical_swaps_df.empty:
+            tbl_col, chart_col = st.columns([1, 1])
+
+            with tbl_col:
+                # Build side-by-side table: rows = contract label, cols = series
+                series_names = list(PHYSICAL_COAL_SWAPS.keys())
+
+                # Collect data per series keyed by label
+                series_data = {}
+                for sname in series_names:
+                    sub = physical_swaps_df[physical_swaps_df["series"] == sname]
+                    series_data[sname] = sub.set_index("label")
+
+                # Determine row order from first series definition
+                row_labels = [lbl for lbl, _ in list(PHYSICAL_COAL_SWAPS.values())[0]["contracts"]]
+
+                table_rows = []
+                for lbl in row_labels:
+                    row = {"Contract": lbl}
+                    for sname in series_names:
+                        df_s = series_data.get(sname, pd.DataFrame())
+                        if lbl in df_s.index:
+                            last = df_s.loc[lbl, "px_last"]
+                            chg  = df_s.loc[lbl, "chg_net_1d"]
+                            row[f"{sname} Last"] = last if pd.notna(last) else None
+                            row[f"{sname} Chg"]  = chg  if pd.notna(chg)  else None
+                        else:
+                            row[f"{sname} Last"] = None
+                            row[f"{sname} Chg"]  = None
+                    table_rows.append(row)
+
+                tbl_df = pd.DataFrame(table_rows)
+
+                fmt = {}
+                subset_chg = []
+                for sname in series_names:
+                    fmt[f"{sname} Last"] = "{:.2f}"
+                    fmt[f"{sname} Chg"]  = "{:+.2f}"
+                    subset_chg.append(f"{sname} Chg")
+
+                styled = (
+                    tbl_df.style
+                    .format(fmt, na_rep="—")
+                    .applymap(colour_chg, subset=subset_chg)
+                )
+                st.dataframe(styled, use_container_width=True, hide_index=True)
+
+            with chart_col:
+                # Forward curve chart — one line per series
+                fig = go.Figure()
+                for sname, cfg in PHYSICAL_COAL_SWAPS.items():
+                    sub = physical_swaps_df[physical_swaps_df["series"] == sname]
+                    sub = sub.set_index("label")
+                    y_vals = [sub.loc[lbl, "px_last"] if lbl in sub.index else None
+                              for lbl in row_labels]
+                    fig.add_trace(go.Scatter(
+                        x=row_labels, y=y_vals,
+                        mode="lines+markers",
+                        name=sname,
+                        line=dict(color=cfg["color"], width=2.5),
+                        marker=dict(size=7, color=cfg["color"]),
+                        hovertemplate=f"<b>{sname}</b><br>%{{x}}: %{{y:,.2f}}<extra></extra>",
+                    ))
+                lo = _LAYOUT_BASE.copy()
+                lo.update(
+                    height=380,
+                    showlegend=True,
+                    legend=dict(x=0.01, y=0.99, bgcolor="rgba(0,0,0,0.45)",
+                                font=dict(size=11), borderwidth=0),
+                    title=dict(text="<b>Physical Futures Curve</b>", font=dict(size=13)),
+                    xaxis=dict(**_LAYOUT_BASE["xaxis"], title="Contract"),
+                    yaxis=dict(**_LAYOUT_BASE["yaxis"], title="Price (USD/t)"),
+                )
+                fig.update_layout(**lo)
+                st.plotly_chart(fig, use_container_width=True, config=_CHART_CFG,
+                                key="chart_phys_swaps")
+        else:
+            st.info("No swap data yet. Run `python bloomberg_pull.py` to fetch.")
 
     # ════════════════════════════════════════════════════════════════════════
     # ENERGY TAB
