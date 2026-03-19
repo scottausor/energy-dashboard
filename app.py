@@ -27,7 +27,7 @@ from config import (
     ENERGY_TICKERS, ENERGY_FUTURES_TICKERS, ENERGY_CT_CONTRACTS,
     MACRO_TICKERS, TREASURY_TICKERS,
     PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SECTIONS, PHYSICAL_COAL_SWAPS,
-    PHYSICAL_COAL_RB_ARGUS, PHYSICAL_COAL_ARA, PHYSICAL_COAL_EXPORT,
+    PHYSICAL_COAL_RB_ARGUS, PHYSICAL_COAL_EXPORT,
     DATA_DIR,
 )
 
@@ -892,17 +892,7 @@ def main():
 
         st.divider()
 
-        # ── 4. ARA — cards only ───────────────────────────────────────────
-        st.markdown("#### ARA")
-        ara_valid = [t for t in PHYSICAL_COAL_ARA if t in PHYSICAL_COAL_TICKERS]
-        ara_cols = st.columns(len(ara_valid))
-        for col, ticker in zip(ara_cols, ara_valid):
-            with col:
-                _phys_metric(ticker)
-
-        st.divider()
-
-        # ── 5. Export Markets — cards only ────────────────────────────────
+        # ── 4. Export Markets — cards only ────────────────────────────────
         st.markdown("#### Export Markets")
         exp_valid = [t for t in PHYSICAL_COAL_EXPORT if t in PHYSICAL_COAL_TICKERS]
         exp_cols = st.columns(len(exp_valid))
