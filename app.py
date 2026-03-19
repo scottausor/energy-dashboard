@@ -601,7 +601,46 @@ def main():
     energy_ct_df  = load_energy_ct()
 
     # ── Tabs ──────────────────────────────────────────────────────────────────
-    tab_coal, tab_energy, tab_macro = st.tabs(["🪨  Coal", "🛢️  Energy", "🌍  Macro"])
+    tab_summary, tab_coal, tab_energy, tab_macro = st.tabs(["📋  Summary", "🪨  Coal", "🛢️  Energy", "🌍  Macro"])
+
+    # ════════════════════════════════════════════════════════════════════════
+    # SUMMARY TAB
+    # ════════════════════════════════════════════════════════════════════════
+    with tab_summary:
+
+        # ── Coal ──────────────────────────────────────────────────────────
+        st.markdown("#### 🪨 Coal")
+        coal_summary_items = [
+            ("XO1 Comdty", COAL_TICKERS["XO1 Comdty"]),
+            ("XA1 Comdty", COAL_TICKERS["XA1 Comdty"]),
+            ("__spread__",  COAL_SPREAD),
+            ("XW1 Comdty", COAL_TICKERS["XW1 Comdty"]),
+        ]
+        kpi_row(coal_df, COAL_TICKERS, ordered_items=coal_summary_items)
+
+        st.divider()
+
+        # ── Energy ────────────────────────────────────────────────────────
+        st.markdown("#### 🛢️ Energy")
+        energy_summary_items = [
+            ("CO1 Comdty",          ENERGY_TICKERS["CO1 Comdty"]),
+            ("CL1 Comdty",          ENERGY_TICKERS["CL1 Comdty"]),
+            ("TTFG1MON BCFV Index", ENERGY_TICKERS["TTFG1MON BCFV Index"]),
+            ("NG1 Comdty",          ENERGY_TICKERS["NG1 Comdty"]),
+            ("AJKMM1 Comdty",       ENERGY_TICKERS["AJKMM1 Comdty"]),
+        ]
+        kpi_row(energy_df, ENERGY_TICKERS, ordered_items=energy_summary_items)
+
+        st.divider()
+
+        # ── Macro ─────────────────────────────────────────────────────────
+        st.markdown("#### 🌍 Macro")
+        macro_summary_items = [
+            ("USDZAR Curncy", MACRO_TICKERS["USDZAR Curncy"]),
+            ("XAU Curncy",    MACRO_TICKERS["XAU Curncy"]),
+            ("XBTUSD Curncy", MACRO_TICKERS["XBTUSD Curncy"]),
+        ]
+        kpi_row(macro_df, MACRO_TICKERS, ordered_items=macro_summary_items)
 
     # ════════════════════════════════════════════════════════════════════════
     # COAL TAB

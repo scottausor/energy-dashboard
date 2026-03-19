@@ -75,7 +75,8 @@ ENERGY_CT_CONTRACTS = {
     },
     "TTF Natural Gas": {
         "color":   "#1D3557",
-        "Monthly": [f"TTFG{i}MON BCFV Index" for i in range(1, 19)],
+        "Monthly": [f"TTFG{i}MON BCFV Index" for i in range(1, 10)]
+                 + [f"TTFG{i}M BCFV Index"   for i in range(10, 19)],
     },
 }
 
