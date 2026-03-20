@@ -805,9 +805,16 @@ def main():
                     row = {"Contract": lbl}
                     for sname in series_names:
                         df_s = series_data.get(sname, pd.DataFrame())
-                        if lbl in df_s.index:
-                            row[f"{sname} Last"] = df_s.loc[lbl, "px_last"]   if pd.notna(df_s.loc[lbl, "px_last"])   else None
-                            row[f"{sname} Chg"]  = df_s.loc[lbl, "chg_net_1d"] if pd.notna(df_s.loc[lbl, "chg_net_1d"]) else None
+                        has_data = (
+                            not df_s.empty
+                            and lbl in df_s.index
+                            and "px_last" in df_s.columns
+                        )
+                        if has_data:
+                            last = df_s.loc[lbl, "px_last"]
+                            row[f"{sname} Last"] = last if pd.notna(last) else None
+                            chg = df_s.loc[lbl, "chg_net_1d"] if "chg_net_1d" in df_s.columns else None
+                            row[f"{sname} Chg"]  = chg if (chg is not None and pd.notna(chg)) else None
                         else:
                             row[f"{sname} Last"] = None
                             row[f"{sname} Chg"]  = None
