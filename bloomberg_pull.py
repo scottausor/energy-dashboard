@@ -359,6 +359,17 @@ def git_push():
         return
 
     repo_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Remove stale git lock files left behind by other processes (e.g. VM commits)
+    for lock_file in ["index.lock", "HEAD.lock", "COMMIT_EDITMSG.lock"]:
+        lock_path = os.path.join(repo_dir, ".git", lock_file)
+        if os.path.exists(lock_path):
+            try:
+                os.remove(lock_path)
+                log.info(f"  git: removed stale lock {lock_file}")
+            except OSError as e:
+                log.warning(f"  git: could not remove {lock_file}: {e}")
+
     ts = datetime.now().strftime("%Y-%m-%d %H:%M")
     cmds = [
         ["git", "add", "data/"],
