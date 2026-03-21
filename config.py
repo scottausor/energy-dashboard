@@ -122,7 +122,7 @@ PHYSICAL_COAL_SWAPS = {
 ENERGY_TICKERS = {
     "CO1 Comdty":          {"name": "Brent Crude",          "short": "Brent",   "color": "#2A9D8F"},
     "CL1 Comdty":          {"name": "WTI Crude",            "short": "WTI",     "color": "#457B9D"},
-    "TTFG1MON BCFV Index": {"name": "TTF Natural Gas",      "short": "TTF",     "color": "#1D3557"},
+    "TTFG1MON BCFV Index": {"name": "TTF Natural Gas (BCFV)", "short": "TTF BCFV", "color": "#1D3557"},
     "NG1 Comdty":          {"name": "Henry Hub Natural Gas", "short": "HH Gas",  "color": "#48CAE4"},
     "AJKMM1 Comdty":       {"name": "JKM Asia LNG (DES Japan-Korea)", "short": "JKM", "color": "#023E8A"},
 }
