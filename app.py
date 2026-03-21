@@ -836,7 +836,8 @@ def main():
                 fig = go.Figure()
                 for sname, cfg in PHYSICAL_COAL_SWAPS.items():
                     sub = physical_swaps_df[physical_swaps_df["series"] == sname].set_index("label")
-                    y_vals = [sub.loc[lbl, "px_last"] if lbl in sub.index else None for lbl in row_labels]
+                    has_px = "px_last" in sub.columns
+                    y_vals = [sub.loc[lbl, "px_last"] if (has_px and lbl in sub.index) else None for lbl in row_labels]
                     fig.add_trace(go.Scatter(
                         x=row_labels, y=y_vals, mode="lines+markers", name=sname,
                         line=dict(color=cfg["color"], width=2.5),
