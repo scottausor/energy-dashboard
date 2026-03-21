@@ -64,6 +64,10 @@ st.markdown("""
 
   /* Divider colour */
   hr { border-color: rgba(255,255,255,0.1) !important; }
+
+  /* Hide Streamlit top toolbar (GitHub link, Share, Deploy buttons) */
+  header[data-testid="stHeader"] { display: none !important; }
+  #MainMenu { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
