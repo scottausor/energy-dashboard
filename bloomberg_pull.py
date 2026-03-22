@@ -65,17 +65,25 @@ def bbg_history(tickers: list[str]) -> pd.DataFrame:
             flds=[HISTORY_FIELD],
             start_date=_start_date(),
             end_date=datetime.today().strftime("%Y-%m-%d"),
+            backend="pandas",
+            format="wide",
         )
-        # Flatten multi-level columns: keep only the ticker level
-        raw.columns = [col[0] if isinstance(col, tuple) else col for col in raw.columns]
-        # Bloomberg sometimes appends out-of-order holiday fill rows at the end
-        # (e.g. Christmas, New Year's, US market holidays) for certain tickers.
-        # Sort, deduplicate, and strip anything beyond today to clean this up.
+        log.info(f"  bdh raw shape={raw.shape}  columns={list(raw.columns)[:6]}")
+
+        # Handle both flat and multi-level column formats from xbbg
+        if isinstance(raw.columns, pd.MultiIndex):
+            # Multi-level: (ticker, field) → keep ticker level only
+            raw.columns = [col[0] for col in raw.columns]
+        else:
+            # Flat columns — may be (ticker, field) tuples or plain strings
+            raw.columns = [col[0] if isinstance(col, tuple) else col for col in raw.columns]
+
+        # Sort, deduplicate, strip future dates, drop Bloomberg zero-fills
         raw.index = pd.to_datetime(raw.index)
         raw = raw.sort_index()
         raw = raw[~raw.index.duplicated(keep="last")]
         raw = raw[raw.index <= pd.Timestamp(datetime.today().date())]
-        raw = raw.replace(0, pd.NA)   # drop Bloomberg zero-fills (e.g. holidays)
+        raw = raw.replace(0, pd.NA)
         return raw
     except Exception as exc:
         log.error(f"  bbg_history failed: {exc}")
