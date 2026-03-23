@@ -1,91 +1,91 @@
-commodity,type,contract,chg_net_1d,chg_pct_1d,fut_last_trade_dt,open_int,px_last,px_volume
-Brent Crude,Monthly,CO1 Comdty,,,,,,
-Brent Crude,Monthly,CO2 Comdty,,,,,,
-Brent Crude,Monthly,CO3 Comdty,,,,,,
-Brent Crude,Monthly,CO4 Comdty,,,,,,
-Brent Crude,Monthly,CO5 Comdty,,,,,,
-Brent Crude,Monthly,CO6 Comdty,,,,,,
-Brent Crude,Monthly,CO7 Comdty,,,,,,
-Brent Crude,Monthly,CO8 Comdty,,,,,,
-Brent Crude,Monthly,CO9 Comdty,,,,,,
-Brent Crude,Monthly,CO10 Comdty,,,,,,
-Brent Crude,Monthly,CO11 Comdty,-4.170000000000002,-5.045372050816699,2027-01-29,65540.0,78.48,36501.0
-Brent Crude,Monthly,CO12 Comdty,-3.950000000000003,-4.82531150745175,2027-02-26,31540.0,77.91,8279.0
-Brent Crude,Monthly,CO13 Comdty,-4.579989999999995,-5.641077182051625,2027-03-31,34191.0,76.61,5581.0
-Brent Crude,Monthly,CO14 Comdty,-3.5900000000000034,-4.4546469785333205,2027-04-30,134489.0,77.0,60559.0
-Brent Crude,Monthly,CO15 Comdty,-3.86,-4.823191303261276,2027-05-28,27749.0,76.17,3376.0
-Brent Crude,Monthly,CO16 Comdty,-3.75,-4.712831469146664,2027-06-30,27150.0,75.82000000000001,2701.0
-Brent Crude,Monthly,CO17 Comdty,-3.649999999999992,-4.608004039893943,2027-07-30,41333.0,75.56,8275.0
-Brent Crude,Monthly,CO18 Comdty,-3.550000000000012,-4.501077722835059,2027-08-31,23572.0,75.32000000000001,1600.0
-WTI Crude,Monthly,CL1 Comdty,-10.100000000000009,-10.281991245037164,2026-04-21,321628.0,88.13,639831.0
-WTI Crude,Monthly,CL2 Comdty,-9.36999999999999,-9.8902258813595,2026-05-19,231769.0,85.37,317617.0
-WTI Crude,Monthly,CL3 Comdty,-8.310000000000002,-9.151982378854628,2026-06-22,119310.0,82.49,179277.0
-WTI Crude,Monthly,CL4 Comdty,-7.200000000000003,-8.27586206896552,2026-07-21,77976.0,79.8,104400.0
-WTI Crude,Monthly,CL5 Comdty,-6.3300000000000125,-7.541999285118566,2026-08-20,109690.0,77.60000000000001,103041.0
-WTI Crude,Monthly,CL6 Comdty,-5.699999999999989,-6.994723278929917,2026-09-22,78030.0,75.79,69215.0
-WTI Crude,Monthly,CL7 Comdty,-5.299999999999997,-6.639939864695562,2026-10-20,64878.0,74.52,53997.0
-WTI Crude,Monthly,CL8 Comdty,-4.989999999999995,-6.350216340035626,2026-11-20,246047.0,73.59,180380.0
-WTI Crude,Monthly,CL9 Comdty,-4.72999999999999,-6.097718190021903,2026-12-21,49934.0,72.84,23732.0
-WTI Crude,Monthly,CL10 Comdty,-4.460000000000008,-5.812589599895748,2027-01-20,38266.0,72.27,13951.0
-WTI Crude,Monthly,CL11 Comdty,-4.230000000000004,-5.559936908517356,2027-02-22,53053.0,71.85000000000001,24287.0
-WTI Crude,Monthly,CL12 Comdty,-4.030000000000001,-5.334215751158175,2027-03-22,33392.0,71.52,5220.0
-WTI Crude,Monthly,CL13 Comdty,,,,,,
-WTI Crude,Monthly,CL14 Comdty,,,,,,
-WTI Crude,Monthly,CL15 Comdty,,,,,,
-WTI Crude,Monthly,CL16 Comdty,,,,,,
-WTI Crude,Monthly,CL17 Comdty,,,,,,
-WTI Crude,Monthly,CL18 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM1 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM2 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM3 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM4 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM5 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM6 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM7 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM8 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM9 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM10 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM11 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM12 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM13 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM14 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM15 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM16 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM17 Comdty,,,,,,
-JKM Asia LNG,Monthly,AJKMM18 Comdty,,,,,,
-Henry Hub Gas,Monthly,NG1 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG2 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG3 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG4 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG5 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG6 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG7 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG8 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG9 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG10 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG11 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG12 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG13 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG14 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG15 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG16 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG17 COMB Comdty,,,,,,
-Henry Hub Gas,Monthly,NG18 COMB Comdty,,,,,,
-TTF Natural Gas,Monthly,TTFG1MON BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG2MON BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG3MON BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG4MON BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG5MON BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG6MON BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG7MON BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG8MON BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG9MON BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG10M BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG11M BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG12M BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG13M BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG14M BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG15M BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG16M BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG17M BCFV Index,,,,,,
-TTF Natural Gas,Monthly,TTFG18M BCFV Index,,,,,,
+commodity,type,contract
+Brent Crude,Monthly,CO1 Comdty
+Brent Crude,Monthly,CO2 Comdty
+Brent Crude,Monthly,CO3 Comdty
+Brent Crude,Monthly,CO4 Comdty
+Brent Crude,Monthly,CO5 Comdty
+Brent Crude,Monthly,CO6 Comdty
+Brent Crude,Monthly,CO7 Comdty
+Brent Crude,Monthly,CO8 Comdty
+Brent Crude,Monthly,CO9 Comdty
+Brent Crude,Monthly,CO10 Comdty
+Brent Crude,Monthly,CO11 Comdty
+Brent Crude,Monthly,CO12 Comdty
+Brent Crude,Monthly,CO13 Comdty
+Brent Crude,Monthly,CO14 Comdty
+Brent Crude,Monthly,CO15 Comdty
+Brent Crude,Monthly,CO16 Comdty
+Brent Crude,Monthly,CO17 Comdty
+Brent Crude,Monthly,CO18 Comdty
+WTI Crude,Monthly,CL1 Comdty
+WTI Crude,Monthly,CL2 Comdty
+WTI Crude,Monthly,CL3 Comdty
+WTI Crude,Monthly,CL4 Comdty
+WTI Crude,Monthly,CL5 Comdty
+WTI Crude,Monthly,CL6 Comdty
+WTI Crude,Monthly,CL7 Comdty
+WTI Crude,Monthly,CL8 Comdty
+WTI Crude,Monthly,CL9 Comdty
+WTI Crude,Monthly,CL10 Comdty
+WTI Crude,Monthly,CL11 Comdty
+WTI Crude,Monthly,CL12 Comdty
+WTI Crude,Monthly,CL13 Comdty
+WTI Crude,Monthly,CL14 Comdty
+WTI Crude,Monthly,CL15 Comdty
+WTI Crude,Monthly,CL16 Comdty
+WTI Crude,Monthly,CL17 Comdty
+WTI Crude,Monthly,CL18 Comdty
+JKM Asia LNG,Monthly,AJKMM1 Comdty
+JKM Asia LNG,Monthly,AJKMM2 Comdty
+JKM Asia LNG,Monthly,AJKMM3 Comdty
+JKM Asia LNG,Monthly,AJKMM4 Comdty
+JKM Asia LNG,Monthly,AJKMM5 Comdty
+JKM Asia LNG,Monthly,AJKMM6 Comdty
+JKM Asia LNG,Monthly,AJKMM7 Comdty
+JKM Asia LNG,Monthly,AJKMM8 Comdty
+JKM Asia LNG,Monthly,AJKMM9 Comdty
+JKM Asia LNG,Monthly,AJKMM10 Comdty
+JKM Asia LNG,Monthly,AJKMM11 Comdty
+JKM Asia LNG,Monthly,AJKMM12 Comdty
+JKM Asia LNG,Monthly,AJKMM13 Comdty
+JKM Asia LNG,Monthly,AJKMM14 Comdty
+JKM Asia LNG,Monthly,AJKMM15 Comdty
+JKM Asia LNG,Monthly,AJKMM16 Comdty
+JKM Asia LNG,Monthly,AJKMM17 Comdty
+JKM Asia LNG,Monthly,AJKMM18 Comdty
+Henry Hub Gas,Monthly,NG1 COMB Comdty
+Henry Hub Gas,Monthly,NG2 COMB Comdty
+Henry Hub Gas,Monthly,NG3 COMB Comdty
+Henry Hub Gas,Monthly,NG4 COMB Comdty
+Henry Hub Gas,Monthly,NG5 COMB Comdty
+Henry Hub Gas,Monthly,NG6 COMB Comdty
+Henry Hub Gas,Monthly,NG7 COMB Comdty
+Henry Hub Gas,Monthly,NG8 COMB Comdty
+Henry Hub Gas,Monthly,NG9 COMB Comdty
+Henry Hub Gas,Monthly,NG10 COMB Comdty
+Henry Hub Gas,Monthly,NG11 COMB Comdty
+Henry Hub Gas,Monthly,NG12 COMB Comdty
+Henry Hub Gas,Monthly,NG13 COMB Comdty
+Henry Hub Gas,Monthly,NG14 COMB Comdty
+Henry Hub Gas,Monthly,NG15 COMB Comdty
+Henry Hub Gas,Monthly,NG16 COMB Comdty
+Henry Hub Gas,Monthly,NG17 COMB Comdty
+Henry Hub Gas,Monthly,NG18 COMB Comdty
+TTF Natural Gas,Monthly,TTFG1MON BCFV Index
+TTF Natural Gas,Monthly,TTFG2MON BCFV Index
+TTF Natural Gas,Monthly,TTFG3MON BCFV Index
+TTF Natural Gas,Monthly,TTFG4MON BCFV Index
+TTF Natural Gas,Monthly,TTFG5MON BCFV Index
+TTF Natural Gas,Monthly,TTFG6MON BCFV Index
+TTF Natural Gas,Monthly,TTFG7MON BCFV Index
+TTF Natural Gas,Monthly,TTFG8MON BCFV Index
+TTF Natural Gas,Monthly,TTFG9MON BCFV Index
+TTF Natural Gas,Monthly,TTFG10M BCFV Index
+TTF Natural Gas,Monthly,TTFG11M BCFV Index
+TTF Natural Gas,Monthly,TTFG12M BCFV Index
+TTF Natural Gas,Monthly,TTFG13M BCFV Index
+TTF Natural Gas,Monthly,TTFG14M BCFV Index
+TTF Natural Gas,Monthly,TTFG15M BCFV Index
+TTF Natural Gas,Monthly,TTFG16M BCFV Index
+TTF Natural Gas,Monthly,TTFG17M BCFV Index
+TTF Natural Gas,Monthly,TTFG18M BCFV Index
