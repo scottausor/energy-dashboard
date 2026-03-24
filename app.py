@@ -677,7 +677,7 @@ def main():
         energy_summary_items = [
             ("CO1 Comdty",          ENERGY_TICKERS["CO1 Comdty"]),
             ("CL1 Comdty",          ENERGY_TICKERS["CL1 Comdty"]),
-            ("TTFG1MON BCFV Index", ENERGY_TICKERS["TTFG1MON BCFV Index"]),
+            ("TZT1 Comdty",         ENERGY_TICKERS["TZT1 Comdty"]),
             ("NG1 Comdty",          ENERGY_TICKERS["NG1 Comdty"]),
             ("AJKMM1 Comdty",       ENERGY_TICKERS["AJKMM1 Comdty"]),
         ]
@@ -933,9 +933,9 @@ def main():
             use_container_width=True, config=_CHART_CFG, key="chart_cl1",
         )
         st.plotly_chart(
-            price_chart(energy_df, "TTFG1MON BCFV Index",
-                        ENERGY_TICKERS["TTFG1MON BCFV Index"]["name"],
-                        ENERGY_TICKERS["TTFG1MON BCFV Index"]["color"], date_from, height=420),
+            price_chart(energy_df, "TZT1 Comdty",
+                        ENERGY_TICKERS["TZT1 Comdty"]["name"],
+                        ENERGY_TICKERS["TZT1 Comdty"]["color"], date_from, height=420),
             use_container_width=True, config=_CHART_CFG, key="chart_ttf",
         )
         st.plotly_chart(
