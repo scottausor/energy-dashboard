@@ -23,8 +23,8 @@ def _hex_to_rgba(hex_color: str, alpha: float = 0.09) -> str:
     return f"rgba({r},{g},{b},{alpha})"
 
 from config import (
-    COAL_TICKERS, COAL_SPREAD, COAL_FUTURES_TICKERS, COAL_CT_CONTRACTS,
-    ENERGY_TICKERS, ENERGY_FUTURES_TICKERS, ENERGY_CT_CONTRACTS,
+    COAL_TICKERS, COAL_SPREAD, COAL_FUTURES_TICKERS, COAL_CT_CONTRACTS, COAL_CHAIN_CONFIG,
+    ENERGY_TICKERS, ENERGY_FUTURES_TICKERS, ENERGY_CT_CONTRACTS, ENERGY_CHAIN_CONFIG,
     MACRO_TICKERS, TREASURY_TICKERS,
     PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SECTIONS, PHYSICAL_COAL_SWAPS,
     PHYSICAL_COAL_RB_ARGUS, PHYSICAL_COAL_ARA_ARGUS, PHYSICAL_COAL_EXPORT,
@@ -619,8 +619,8 @@ def main():
     macro_df  = load_macro_prices()
     tsy_df    = load_treasury()
 
-    coal_chains      = {t: (load_chain(t), COAL_TICKERS[t])   for t in COAL_FUTURES_TICKERS}
-    energy_chains    = {t: (load_chain(t), ENERGY_TICKERS[t]) for t in ENERGY_FUTURES_TICKERS}
+    coal_chains      = {t: (load_chain(t), COAL_CHAIN_CONFIG[t])   for t in COAL_FUTURES_TICKERS}
+    energy_chains    = {t: (load_chain(t), ENERGY_CHAIN_CONFIG[t]) for t in ENERGY_FUTURES_TICKERS}
     coal_ct_df       = load_coal_ct()
     energy_ct_df     = load_energy_ct()
     physical_coal_df   = load_physical_coal_prices()
@@ -663,10 +663,10 @@ def main():
         # ── Coal ──────────────────────────────────────────────────────────
         st.markdown("#### 🪨 Coal")
         coal_summary_items = [
-            ("XO1 Comdty", COAL_TICKERS["XO1 Comdty"]),
-            ("XA1 Comdty", COAL_TICKERS["XA1 Comdty"]),
+            ("XOA Comdty", COAL_TICKERS["XOA Comdty"]),
+            ("XAA Comdty", COAL_TICKERS["XAA Comdty"]),
             ("__spread__",  COAL_SPREAD),
-            ("XW1 Comdty", COAL_TICKERS["XW1 Comdty"]),
+            ("XWA Comdty", COAL_TICKERS["XWA Comdty"]),
         ]
         kpi_row(coal_df, COAL_TICKERS, ordered_items=coal_summary_items)
 
@@ -675,11 +675,11 @@ def main():
         # ── Energy ────────────────────────────────────────────────────────
         st.markdown("#### 🛢️ Energy")
         energy_summary_items = [
-            ("CO1 Comdty",          ENERGY_TICKERS["CO1 Comdty"]),
-            ("CL1 Comdty",          ENERGY_TICKERS["CL1 Comdty"]),
-            ("TZT1 Comdty",         ENERGY_TICKERS["TZT1 Comdty"]),
-            ("NG1 Comdty",          ENERGY_TICKERS["NG1 Comdty"]),
-            ("AJKMM1 Comdty",       ENERGY_TICKERS["AJKMM1 Comdty"]),
+            ("COA Comdty",   ENERGY_TICKERS["COA Comdty"]),
+            ("CLA Comdty",   ENERGY_TICKERS["CLA Comdty"]),
+            ("TZTA Comdty",  ENERGY_TICKERS["TZTA Comdty"]),
+            ("NGA Comdty",   ENERGY_TICKERS["NGA Comdty"]),
+            ("AJKMM1 Comdty",ENERGY_TICKERS["AJKMM1 Comdty"]),
         ]
         kpi_row(energy_df, ENERGY_TICKERS, ordered_items=energy_summary_items)
 
@@ -700,26 +700,26 @@ def main():
     with tab_coal:
         # KPI bar — order: API4, API2, Freight, NEWC
         coal_kpi_items = [
-            ("XO1 Comdty",  COAL_TICKERS["XO1 Comdty"]),
-            ("XA1 Comdty",  COAL_TICKERS["XA1 Comdty"]),
+            ("XOA Comdty",  COAL_TICKERS["XOA Comdty"]),
+            ("XAA Comdty",  COAL_TICKERS["XAA Comdty"]),
             ("__spread__",  COAL_SPREAD),
-            ("XW1 Comdty",  COAL_TICKERS["XW1 Comdty"]),
+            ("XWA Comdty",  COAL_TICKERS["XWA Comdty"]),
         ]
         kpi_row(coal_df, COAL_TICKERS, ordered_items=coal_kpi_items)
 
         st.markdown("#### Price History")
 
         st.plotly_chart(
-            price_chart(coal_df, "XO1 Comdty",
-                        COAL_TICKERS["XO1 Comdty"]["name"],
-                        COAL_TICKERS["XO1 Comdty"]["color"], date_from,
+            price_chart(coal_df, "XOA Comdty",
+                        COAL_TICKERS["XOA Comdty"]["name"],
+                        COAL_TICKERS["XOA Comdty"]["color"], date_from,
                         height=420),
             use_container_width=True, config=_CHART_CFG, key="chart_xo1",
         )
         st.plotly_chart(
-            price_chart(coal_df, "XA1 Comdty",
-                        COAL_TICKERS["XA1 Comdty"]["name"],
-                        COAL_TICKERS["XA1 Comdty"]["color"], date_from,
+            price_chart(coal_df, "XAA Comdty",
+                        COAL_TICKERS["XAA Comdty"]["name"],
+                        COAL_TICKERS["XAA Comdty"]["color"], date_from,
                         height=420),
             use_container_width=True, config=_CHART_CFG, key="chart_xa1",
         )
@@ -733,9 +733,9 @@ def main():
             use_container_width=True, config=_CHART_CFG, key="chart_spread",
         )
         st.plotly_chart(
-            price_chart(coal_df, "XW1 Comdty",
-                        COAL_TICKERS["XW1 Comdty"]["name"],
-                        COAL_TICKERS["XW1 Comdty"]["color"], date_from,
+            price_chart(coal_df, "XWA Comdty",
+                        COAL_TICKERS["XWA Comdty"]["name"],
+                        COAL_TICKERS["XWA Comdty"]["color"], date_from,
                         height=420),
             use_container_width=True, config=_CHART_CFG, key="chart_xw1",
         )
@@ -958,27 +958,27 @@ def main():
         st.markdown("#### Price History")
 
         st.plotly_chart(
-            price_chart(energy_df, "CO1 Comdty",
-                        ENERGY_TICKERS["CO1 Comdty"]["name"],
-                        ENERGY_TICKERS["CO1 Comdty"]["color"], date_from, height=420),
+            price_chart(energy_df, "COA Comdty",
+                        ENERGY_TICKERS["COA Comdty"]["name"],
+                        ENERGY_TICKERS["COA Comdty"]["color"], date_from, height=420),
             use_container_width=True, config=_CHART_CFG, key="chart_co1",
         )
         st.plotly_chart(
-            price_chart(energy_df, "CL1 Comdty",
-                        ENERGY_TICKERS["CL1 Comdty"]["name"],
-                        ENERGY_TICKERS["CL1 Comdty"]["color"], date_from, height=420),
+            price_chart(energy_df, "CLA Comdty",
+                        ENERGY_TICKERS["CLA Comdty"]["name"],
+                        ENERGY_TICKERS["CLA Comdty"]["color"], date_from, height=420),
             use_container_width=True, config=_CHART_CFG, key="chart_cl1",
         )
         st.plotly_chart(
-            price_chart(energy_df, "TZT1 Comdty",
-                        ENERGY_TICKERS["TZT1 Comdty"]["name"],
-                        ENERGY_TICKERS["TZT1 Comdty"]["color"], date_from, height=420),
+            price_chart(energy_df, "TZTA Comdty",
+                        ENERGY_TICKERS["TZTA Comdty"]["name"],
+                        ENERGY_TICKERS["TZTA Comdty"]["color"], date_from, height=420),
             use_container_width=True, config=_CHART_CFG, key="chart_ttf",
         )
         st.plotly_chart(
-            price_chart(energy_df, "NG1 Comdty",
-                        ENERGY_TICKERS["NG1 Comdty"]["name"],
-                        ENERGY_TICKERS["NG1 Comdty"]["color"], date_from, height=420),
+            price_chart(energy_df, "NGA Comdty",
+                        ENERGY_TICKERS["NGA Comdty"]["name"],
+                        ENERGY_TICKERS["NGA Comdty"]["color"], date_from, height=420),
             use_container_width=True, config=_CHART_CFG, key="chart_ng1",
         )
         st.plotly_chart(

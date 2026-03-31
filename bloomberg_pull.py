@@ -140,11 +140,11 @@ def bbg_treasury_curve() -> pd.DataFrame:
 import numpy as np
 
 DEMO_SEED_PRICES = {
-    # Coal
-    "XO1 Comdty": 115.0, "XA1 Comdty": 130.0, "XW1 Comdty": 118.0,
-    # Energy
-    "CO1 Comdty": 82.0, "CL1 Comdty": 78.0,
-    "TZT1 Comdty": 35.0, "NG1 Comdty": 2.5, "AJKMM1 Comdty": 12.5,
+    # Coal (active contract tickers)
+    "XOA Comdty": 115.0, "XAA Comdty": 130.0, "XWA Comdty": 118.0,
+    # Energy (active contract tickers)
+    "COA Comdty": 82.0, "CLA Comdty": 78.0,
+    "TZTA Comdty": 35.0, "NGA Comdty": 2.5, "AJKMM1 Comdty": 12.5,
     # Physical Coal — Richards Bay
     "CO03C001 Index": 108.0, "CO03C008 Index": 95.0,
     "NACI0004 Index": 102.0, "CO03C005 Index": 93.0,

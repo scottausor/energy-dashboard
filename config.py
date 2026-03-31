@@ -2,22 +2,29 @@
 
 # ── Coal Benchmarks ────────────────────────────────────────────────────────────
 COAL_TICKERS = {
-    "XO1 Comdty": {"name": "API4 – FOB Richards Bay 6,000 kCal",  "short": "API4 - FOB Richards Bay 6'000kCal",  "color": "#F4A261"},
-    "XA1 Comdty": {"name": "API2 – CIF ARA 6,000 kCal",           "short": "API2 - CIF ARA 6'000kCal",          "color": "#E76F51"},
-    "XW1 Comdty": {"name": "NEWC – FOB Newcastle 6,000 kCal",      "short": "FOB Newcastle 6'000kCal",           "color": "#E9C46A"},
+    "XOA Comdty": {"name": "API4 – FOB Richards Bay 6,000 kCal",  "short": "API4 - FOB Richards Bay 6'000kCal",  "color": "#F4A261"},
+    "XAA Comdty": {"name": "API2 – CIF ARA 6,000 kCal",           "short": "API2 - CIF ARA 6'000kCal",          "color": "#E76F51"},
+    "XWA Comdty": {"name": "NEWC – FOB Newcastle 6,000 kCal",      "short": "FOB Newcastle 6'000kCal",           "color": "#E9C46A"},
 }
 
-# Spread: XA1 - XO1  (ARA minus Richards Bay = implied freight)
+# Spread: XAA - XOA  (ARA minus Richards Bay = implied freight)
 COAL_SPREAD = {
-    "ticker_a":  "XA1 Comdty",
-    "ticker_b":  "XO1 Comdty",
-    "name":      "Richards Bay – ARA Implied Freight (XA1 – XO1)",
+    "ticker_a":  "XAA Comdty",
+    "ticker_b":  "XOA Comdty",
+    "name":      "Richards Bay – ARA Implied Freight (XAA – XOA)",
     "short":     "Richards Bay - ARA Implied Freight",
     "color":     "#52B788",
 }
 
 # Tickers that get futures-chain pulls for the Coal tab (CCRV forward curves)
 COAL_FUTURES_TICKERS = ["XO1 Comdty", "XA1 Comdty", "XW1 Comdty"]
+
+# Display config for coal forward curves (maps front-month → same style as active ticker)
+COAL_CHAIN_CONFIG = {
+    "XO1 Comdty": COAL_TICKERS["XOA Comdty"],
+    "XA1 Comdty": COAL_TICKERS["XAA Comdty"],
+    "XW1 Comdty": COAL_TICKERS["XWA Comdty"],
+}
 
 # ── Explicit CT contracts  (Monthly / Quarterly / Yearly) ──────────────────────
 COAL_CT_CONTRACTS = {
@@ -126,14 +133,24 @@ PHYSICAL_COAL_SWAPS = {
 
 # ── Energy Benchmarks ──────────────────────────────────────────────────────────
 ENERGY_TICKERS = {
-    "CO1 Comdty":          {"name": "Brent Crude",          "short": "Brent",   "color": "#2A9D8F"},
-    "CL1 Comdty":          {"name": "WTI Crude",            "short": "WTI",     "color": "#457B9D"},
-    "TZT1 Comdty":         {"name": "TTF Natural Gas",        "short": "TTF",      "color": "#1D3557"},
-    "NG1 Comdty":          {"name": "Henry Hub Natural Gas", "short": "HH Gas",  "color": "#48CAE4"},
-    "AJKMM1 Comdty":       {"name": "JKM Asia LNG (DES Japan-Korea)", "short": "JKM", "color": "#023E8A"},
+    "COA Comdty":    {"name": "Brent Crude",                       "short": "Brent",   "color": "#2A9D8F"},
+    "CLA Comdty":    {"name": "WTI Crude",                         "short": "WTI",     "color": "#457B9D"},
+    "TZTA Comdty":   {"name": "TTF Natural Gas",                   "short": "TTF",     "color": "#1D3557"},
+    "NGA Comdty":    {"name": "Henry Hub Natural Gas",             "short": "HH Gas",  "color": "#48CAE4"},
+    "AJKMM1 Comdty": {"name": "JKM Asia LNG (DES Japan-Korea)",   "short": "JKM",     "color": "#023E8A"},
 }
 
-ENERGY_FUTURES_TICKERS = list(ENERGY_TICKERS.keys())
+# Front-month tickers used for futures chain pulls and CT table (unchanged)
+ENERGY_FUTURES_TICKERS = ["CO1 Comdty", "CL1 Comdty", "TZT1 Comdty", "NG1 Comdty", "AJKMM1 Comdty"]
+
+# Display config for energy forward curves (maps front-month → same style as active ticker)
+ENERGY_CHAIN_CONFIG = {
+    "CO1 Comdty":    ENERGY_TICKERS["COA Comdty"],
+    "CL1 Comdty":    ENERGY_TICKERS["CLA Comdty"],
+    "TZT1 Comdty":   ENERGY_TICKERS["TZTA Comdty"],
+    "NG1 Comdty":    ENERGY_TICKERS["NGA Comdty"],
+    "AJKMM1 Comdty": ENERGY_TICKERS["AJKMM1 Comdty"],
+}
 
 # TTF explicit forward-curve contracts (FSTUM1–24 Index) for CCRV overlay
 TTF_CURVE_TICKERS = [f"FSTUM{i} Index" for i in range(1, 25)]
