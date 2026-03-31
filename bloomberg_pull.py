@@ -150,7 +150,8 @@ DEMO_SEED_PRICES = {
     "NACI0004 Index": 102.0, "CO03C005 Index": 93.0,
     "CO01C015 Index": 85.0,
     # Physical Coal — ARA
-    "CO22C015 Index": 122.0, "CO20C017 Index": 120.0, "CO24C069 Index": 112.0,
+    "CO22C015 Index": 122.0, "CO20C017 Index": 120.0,
+    "CO24C002 Index": 121.0, "CO24C069 Index": 112.0,
     # Physical Coal — Export Markets
     "NACI00B4 Index": 105.0, "NACI00AD Index": 103.0,
     "NACI019C Index": 100.0, "NACI0137 Index": 115.0,

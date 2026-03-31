@@ -27,7 +27,7 @@ from config import (
     ENERGY_TICKERS, ENERGY_FUTURES_TICKERS, ENERGY_CT_CONTRACTS,
     MACRO_TICKERS, TREASURY_TICKERS,
     PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SECTIONS, PHYSICAL_COAL_SWAPS,
-    PHYSICAL_COAL_RB_ARGUS, PHYSICAL_COAL_EXPORT,
+    PHYSICAL_COAL_RB_ARGUS, PHYSICAL_COAL_ARA_ARGUS, PHYSICAL_COAL_EXPORT,
     DATA_DIR,
 )
 
@@ -904,7 +904,44 @@ def main():
 
         st.divider()
 
-        # ── 4. Export Markets — cards only ────────────────────────────────
+        # ── 4. Argus CIF ARA — 2 cards + combined price history chart ─────
+        st.markdown("#### Argus CIF ARA")
+        ara_valid = [t for t in PHYSICAL_COAL_ARA_ARGUS if t in PHYSICAL_COAL_TICKERS]
+        ara_cards_col, ara_hist_col = st.columns([1, 2])
+
+        with ara_cards_col:
+            for ticker in ara_valid:
+                _phys_metric(ticker)
+
+        with ara_hist_col:
+            fig = go.Figure()
+            for ticker in ara_valid:
+                cfg = PHYSICAL_COAL_TICKERS[ticker]
+                if physical_coal_df.empty or ticker not in physical_coal_df.columns:
+                    continue
+                s = physical_coal_df[ticker].dropna()
+                s = s[s > 0].sort_index()
+                s = s[~s.index.duplicated(keep="last")]
+                s = s[s.index >= pd.Timestamp(date_from)]
+                if s.empty:
+                    continue
+                fig.add_trace(go.Scatter(
+                    x=s.index, y=s.values, mode="lines", name=cfg["short"],
+                    line=dict(color=cfg["color"], width=2), connectgaps=False,
+                    hovertemplate=f"<b>{cfg['name']}</b><br>%{{x|%d %b %Y}}  %{{y:,.2f}}<extra></extra>",
+                ))
+            lo = _LAYOUT_BASE.copy()
+            lo.update(
+                height=320, showlegend=True,
+                legend=dict(x=0.01, y=0.99, bgcolor="rgba(0,0,0,0.45)", font=dict(size=10)),
+                title=dict(text="<b>Argus CIF ARA Price History</b>", font=dict(size=13)),
+            )
+            fig.update_layout(**lo)
+            st.plotly_chart(fig, use_container_width=True, config=_CHART_CFG, key="chart_ara_argus_all")
+
+        st.divider()
+
+        # ── 5. Export Markets — cards only ────────────────────────────────
         st.markdown("#### Export Markets")
         exp_valid = [t for t in PHYSICAL_COAL_EXPORT if t in PHYSICAL_COAL_TICKERS]
         exp_cols = st.columns(len(exp_valid))

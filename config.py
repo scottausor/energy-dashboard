@@ -53,7 +53,8 @@ PHYSICAL_COAL_TICKERS = {
     # ── ARA ──────────────────────────────────────────────────────────────────
     "CO22C015 Index": {"name": "Argus – Daily ARA 6,000 kCal",  "short": "ARA 6k Daily",   "color": "#2A9D8F"},
     "CO20C017 Index": {"name": "Argus – Weekly ARA 6,000 kCal", "short": "ARA 6k Weekly",  "color": "#48CAE4"},
-    "CO24C069 Index": {"name": "Argus – Daily ARA 5,700 kCal",  "short": "ARA 5.7k Daily", "color": "#0096C7"},
+    "CO24C002 Index": {"name": "Argus – CIF ARA 6,000 kCal",    "short": "CIF ARA 6k",     "color": "#2A9D8F"},
+    "CO24C069 Index": {"name": "Argus – CIF ARA 5,700 kCal",    "short": "CIF ARA 5.7k",   "color": "#0096C7"},
     # ── Export Markets ────────────────────────────────────────────────────────
     "NACI00B4 Index": {"name": "Platts CFR West Coast India 5,500 kCal", "short": "India W Coast", "color": "#8338EC"},
     "NACI00AD Index": {"name": "Platts CFR East Coast India 5,500 kCal", "short": "India E Coast", "color": "#7209B7"},
@@ -75,6 +76,11 @@ PHYSICAL_COAL_RB_ARGUS = [
 # ARA — cards only
 PHYSICAL_COAL_ARA = [
     "CO22C015 Index", "CO20C017 Index", "CO24C069 Index",
+]
+
+# Argus CIF ARA — 2 cards + combined price history chart
+PHYSICAL_COAL_ARA_ARGUS = [
+    "CO24C002 Index", "CO24C069 Index",
 ]
 
 # Export Markets — cards only
@@ -104,7 +110,7 @@ PHYSICAL_COAL_SWAPS = {
     "ARA CIF Swaps": {
         "color": "#2A9D8F",
         "contracts": [
-            ("Current Month", "CO22C015 Index"),
+            ("Current Month", "CO24C002 Index"),
             ("Month 1",       "CO22C001 Index"),
             ("Quarter 1",     "CO22C002 Index"),
             ("Quarter 2",     "CO22C003 Index"),
