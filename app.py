@@ -408,7 +408,7 @@ def render_ct_table(chains: dict):
     styled = (
         df.style
         .format(fmt, na_rep="—")
-        .applymap(colour_chg, subset=["Chg", "Chg %"])
+        .map(colour_chg, subset=["Chg", "Chg %"])
     )
     st.dataframe(styled, use_container_width=True, hide_index=True)
 
@@ -513,7 +513,7 @@ def render_coal_ct_table(ct_df: pd.DataFrame):
                 styled = (
                     sub.style
                     .format(fmt, na_rep="—")
-                    .applymap(colour_chg, subset=[c for c in ["Chg", "Chg %"] if c in sub.columns])
+                    .map(colour_chg, subset=[c for c in ["Chg", "Chg %"] if c in sub.columns])
                 )
                 st.dataframe(styled, use_container_width=True, hide_index=True)
 
@@ -571,7 +571,7 @@ def render_energy_ct_table(ct_df: pd.DataFrame):
             styled = (
                 sub.style
                 .format(fmt, na_rep="—")
-                .applymap(colour_chg, subset=[c for c in ["Chg", "Chg %"] if c in sub.columns])
+                .map(colour_chg, subset=[c for c in ["Chg", "Chg %"] if c in sub.columns])
             )
             st.dataframe(styled, use_container_width=True, hide_index=True)
 
@@ -833,7 +833,7 @@ def main():
                     subset_chg.append(f"{sname} Chg")
                 styled = (tbl_df.style
                           .format(fmt, na_rep="—")
-                          .applymap(colour_chg, subset=subset_chg))
+                          .map(colour_chg, subset=subset_chg))
                 st.dataframe(styled, use_container_width=True, hide_index=True)
 
             with chart_col:
