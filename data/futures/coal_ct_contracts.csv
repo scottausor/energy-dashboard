@@ -1,6 +1,6 @@
 commodity,type,contract,chg_net_1d,chg_pct_1d,fut_last_trade_dt,open_int,px_last,px_volume
 API4 - FOB Richards Bay,Monthly,XO1 Comdty,0.0,0.0,2026-04-24,545,107.25,
-API4 - FOB Richards Bay,Monthly,XO2 Comdty,0.0,0.0,2026-05-29,445,108.4,
+API4 - FOB Richards Bay,Monthly,XO2 Comdty,0.0,0.0,2026-05-29,445,108.4,5.0
 API4 - FOB Richards Bay,Monthly,XO3 Comdty,0.0,0.0,2026-06-26,295,109.4,
 API4 - FOB Richards Bay,Monthly,XO4 Comdty,0.0,0.0,2026-07-31,156,110.5,
 API4 - FOB Richards Bay,Monthly,XO5 Comdty,0.0,0.0,2026-08-28,153,111.6,
@@ -36,7 +36,7 @@ API2 - CIF ARA,Monthly,XA11 Comdty,0.0,0.0,2027-02-26,846,128.75,
 API2 - CIF ARA,Monthly,XA12 Comdty,0.0,0.0,2027-03-25,846,128.15,
 API2 - CIF ARA,Quarterly,XE1 Comdty,0.0,0.0,2026-04-24,0,117.98,
 API2 - CIF ARA,Quarterly,XE2 Comdty,-0.4500000000000028,-0.36159100040177,2026-07-31,0,124.0,36.0
-API2 - CIF ARA,Quarterly,XE3 Comdty,-1.1000000000000083,-0.8647798742138433,2026-10-30,0,126.1,8.0
+API2 - CIF ARA,Quarterly,XE3 Comdty,-1.1000000000000083,-0.8647798742138433,2026-10-30,0,126.1,28.0
 API2 - CIF ARA,Quarterly,XE4 Comdty,0.0,0.0,2027-01-29,0,128.5,
 API2 - CIF ARA,Quarterly,XE5 Comdty,0.0,0.0,2027-04-30,0,125.78,
 API2 - CIF ARA,Quarterly,XE6 Comdty,0.0,0.0,2027-07-30,0,124.97,
