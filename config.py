@@ -179,6 +179,57 @@ ENERGY_CT_CONTRACTS = {
     },
 }
 
+# ── Oil Products (BOIL equivalent) ────────────────────────────────────────────
+OIL_PRODUCTS_TICKERS = {
+    "Crude": {
+        "EUCRBRDT Index": {"name": "Dated Brent",    "short": "Dated Brent",  "color": "#2A9D8F"},
+        "GIOS0973 Index": {"name": "Forties NWE",    "short": "Forties",      "color": "#264653"},
+        "GIOS0977 Index": {"name": "Ekofisk NWE",    "short": "Ekofisk",      "color": "#457B9D"},
+        "USCRWTIM Index": {"name": "WTI Midland",    "short": "WTI Midl.",    "color": "#1D3557"},
+        "USCRWTIC Index": {"name": "WTI Cushing",    "short": "WTI Cush.",    "color": "#0077B6"},
+        "USCRSRIN Index": {"name": "US Sour (GCSI)", "short": "US Sour",      "color": "#0096C7"},
+        "LACRMAUS Index": {"name": "Maya USGC",      "short": "Maya",         "color": "#00B4D8"},
+        "GIOS0299 Index": {"name": "ESPO",           "short": "ESPO",         "color": "#48CAE4"},
+        "GIOS0097 Index": {"name": "Dubai FOB",      "short": "Dubai",        "color": "#023E8A"},
+        "GIOS0098 Index": {"name": "Oman FOB",       "short": "Oman",         "color": "#ADE8F4"},
+    },
+    "Fuel Oil": {
+        "N6SH380S Index": {"name": "SG 380 CST",          "short": "SG 380",  "color": "#6D6875"},
+        "N6SH180S Index": {"name": "SG 180 CST 3.5%",     "short": "SG 180",  "color": "#B5838D"},
+        "GIOS0266 Index": {"name": "NWE 380 3.5% Barges", "short": "NWE 380", "color": "#E5989B"},
+    },
+    "Gasoil": {
+        "HEATAAAB Index": {"name": "NWE Gasoil CIF", "short": "NWE GO",    "color": "#F4A261"},
+        "DIEN10CF Index": {"name": "NWE ULSD CIF",   "short": "NWE ULSD",  "color": "#E76F51"},
+        "GIOS0094 Index": {"name": "MED ULSD CIF",   "short": "MED ULSD",  "color": "#E9C46A"},
+        "GDD01646 Index": {"name": "Magel ULSD",     "short": "Magel ULSD","color": "#F3C677"},
+    },
+    "Jet Fuel": {
+        "JETKSPOT Index": {"name": "SG FOB",    "short": "SG Jet",  "color": "#8338EC"},
+        "JET1NECC Index": {"name": "NWE CIF",   "short": "NWE Jet", "color": "#7209B7"},
+        "JETFLAPL Index": {"name": "US LA",     "short": "US LA",   "color": "#480CA8"},
+        "JETIGCPR Index": {"name": "US 54 Pas", "short": "US 54",   "color": "#B5179E"},
+    },
+    "Gasoline": {
+        "MOGFM92S Index": {"name": "SG 92 RON",     "short": "SG 92",    "color": "#52B788"},
+        "GIOS0004 Index": {"name": "NWE EBOB",      "short": "NWE EBOB", "color": "#40916C"},
+        "RBOBG87P Index": {"name": "US RBOB Pas",   "short": "RBOB",     "color": "#2D6A4F"},
+        "MOGLCB85 Index": {"name": "LA CARBOB",     "short": "CARBOB",   "color": "#74C69D"},
+        "GGD01642 Index": {"name": "US Magell. V",  "short": "US Mag",   "color": "#95D5B2"},
+        "GGC01651 Index": {"name": "US CBOB Chi",   "short": "CBOB Chi", "color": "#1B4332"},
+        "GGC01005 Index": {"name": "US 87 Pas",     "short": "US 87",    "color": "#B7E4C7"},
+    },
+    "Naphtha": {
+        "NAPHJPNC Index": {"name": "Japan CFR", "short": "Japan CFR", "color": "#FFB703"},
+        "GIOS0092 Index": {"name": "NWE CIF",   "short": "NWE Naph",  "color": "#FB8500"},
+    },
+    "LPG": {
+        "GIOS0878 Index": {"name": "ME Propane",  "short": "ME Prop",  "color": "#F72585"},
+        "GIOS0880 Index": {"name": "ME Butane",   "short": "ME But",   "color": "#E63946"},
+        "GIOS0686 Index": {"name": "NWE Propane", "short": "NWE Prop", "color": "#FF6B6B"},
+    },
+}
+
 # ── Macro Indicators ───────────────────────────────────────────────────────────
 MACRO_TICKERS = {
     "USDZAR Curncy": {"name": "USD / ZAR",       "short": "USDZAR",  "color": "#8338EC"},

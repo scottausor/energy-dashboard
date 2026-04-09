@@ -27,6 +27,7 @@ from config import (
     TTF_CURVE_TICKERS,
     TREASURY_TICKERS, FUTURES_CHAIN_FIELDS, HISTORY_FIELD,
     PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SWAPS,
+    OIL_PRODUCTS_TICKERS,
 )
 
 # ── Logging setup ──────────────────────────────────────────────────────────────
@@ -155,6 +156,27 @@ DEMO_SEED_PRICES = {
     # Physical Coal — Export Markets
     "NACI00B4 Index": 105.0, "NACI00AD Index": 103.0,
     "NACI019C Index": 100.0, "NACI0137 Index": 115.0,
+    # Oil Products — Crude
+    "EUCRBRDT Index": 82.0, "GIOS0973 Index": 81.5, "GIOS0977 Index": 81.8,
+    "USCRWTIM Index": 78.5, "USCRWTIC Index": 78.0, "USCRSRIN Index": 76.0,
+    "LACRMAUS Index": 74.0, "GIOS0299 Index": 77.0, "GIOS0097 Index": 80.0,
+    "GIOS0098 Index": 80.5,
+    # Oil Products — Fuel Oil
+    "N6SH380S Index": 410.0, "N6SH180S Index": 420.0, "GIOS0266 Index": 390.0,
+    # Oil Products — Gasoil
+    "HEATAAAB Index": 720.0, "DIEN10CF Index": 740.0, "GIOS0094 Index": 735.0,
+    "GDD01646 Index": 738.0,
+    # Oil Products — Jet Fuel
+    "JETKSPOT Index": 780.0, "JET1NECC Index": 790.0, "JETFLAPL Index": 760.0,
+    "JETIGCPR Index": 770.0,
+    # Oil Products — Gasoline
+    "MOGFM92S Index": 680.0, "GIOS0004 Index": 700.0, "RBOBG87P Index": 710.0,
+    "MOGLCB85 Index": 720.0, "GGD01642 Index": 705.0, "GGC01651 Index": 695.0,
+    "GGC01005 Index": 690.0,
+    # Oil Products — Naphtha
+    "NAPHJPNC Index": 620.0, "GIOS0092 Index": 630.0,
+    # Oil Products — LPG
+    "GIOS0878 Index": 580.0, "GIOS0880 Index": 590.0, "GIOS0686 Index": 560.0,
     # Macro
     "USDZAR Curncy": 18.50, "XAU Curncy": 2050.0, "XBTUSD Curncy": 62000.0,
     # Treasuries (yields)
@@ -321,6 +343,50 @@ def demo_physical_swaps(swap_config: dict) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def bbg_oil_products_snapshot() -> pd.DataFrame:
+    """Pull snapshot prices for all oil products tickers (BOIL equivalent)."""
+    log.info("  bdp → oil products snapshot")
+    rows_meta, all_tickers = [], []
+    for category, tickers in OIL_PRODUCTS_TICKERS.items():
+        for ticker, cfg in tickers.items():
+            rows_meta.append({"category": category, "ticker": ticker, "name": cfg["name"]})
+            all_tickers.append(ticker)
+    try:
+        prices = blp.bdp(
+            tickers=all_tickers,
+            flds=["PX_LAST", "CHG_NET_1D", "CHG_PCT_1D", "LAST_UPDATE_DT"],
+        )
+        prices.index.name = "ticker"
+        prices = prices.reset_index()
+        prices.columns = [c.lower() for c in prices.columns]
+        meta_df = pd.DataFrame(rows_meta)
+        return meta_df.merge(prices, on="ticker", how="left")
+    except Exception as exc:
+        log.error(f"  bbg_oil_products_snapshot failed: {exc}")
+        return pd.DataFrame()
+
+
+def demo_oil_products_snapshot() -> pd.DataFrame:
+    """Demo synthetic version of bbg_oil_products_snapshot."""
+    rows = []
+    rng = np.random.default_rng(42)
+    ts = datetime.now().strftime("%Y-%m-%d")
+    for category, tickers in OIL_PRODUCTS_TICKERS.items():
+        for ticker, cfg in tickers.items():
+            base = DEMO_SEED_PRICES.get(ticker, 100.0)
+            chg = round(rng.normal(0, base * 0.005), 2)
+            rows.append({
+                "category":      category,
+                "ticker":        ticker,
+                "name":          cfg["name"],
+                "px_last":       round(base + chg, 2),
+                "chg_net_1d":    chg,
+                "chg_pct_1d":    round(chg / base * 100, 3),
+                "last_update_dt": ts,
+            })
+    return pd.DataFrame(rows)
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # Save helpers
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -407,11 +473,12 @@ def run():
     log.info(f"  Mode: {'LIVE (Bloomberg)' if BBG_OK else 'DEMO (synthetic)'}   ")
     log.info("════════════════════════════════════════")
 
-    fetch      = bbg_history            if BBG_OK else demo_history
-    chain      = bbg_futures_chain      if BBG_OK else demo_futures_chain
-    tsy        = bbg_treasury_curve     if BBG_OK else demo_treasury_curve
-    ct_pull    = bbg_explicit_contracts if BBG_OK else demo_explicit_contracts
-    swaps_pull = bbg_physical_swaps     if BBG_OK else demo_physical_swaps
+    fetch       = bbg_history              if BBG_OK else demo_history
+    chain       = bbg_futures_chain        if BBG_OK else demo_futures_chain
+    tsy         = bbg_treasury_curve       if BBG_OK else demo_treasury_curve
+    ct_pull     = bbg_explicit_contracts   if BBG_OK else demo_explicit_contracts
+    swaps_pull  = bbg_physical_swaps       if BBG_OK else demo_physical_swaps
+    oil_snap    = bbg_oil_products_snapshot if BBG_OK else demo_oil_products_snapshot
 
     # 1 ── Coal prices ──────────────────────────────────────────────────────────
     log.info("[1/7] Coal historical prices")
@@ -508,6 +575,20 @@ def run():
     treasury_df = tsy()
     if not treasury_df.empty:
         save_macro(treasury_df, "treasury_curve.csv")
+
+    # 6 ── Oil Products snapshot + history ─────────────────────────────────────
+    log.info("[6/7] Oil Products snapshot (BOIL equivalent)")
+    oil_snap_df = oil_snap()
+    if not oil_snap_df.empty:
+        path = os.path.join(DATA_DIR, "prices", "oil_products_snapshot.csv")
+        oil_snap_df.to_csv(path, index=False)
+        log.info(f"  saved → {path}  rows={len(oil_snap_df)}")
+
+    log.info("[6b/7] Oil Products price history")
+    all_oil_tickers = [t for cat in OIL_PRODUCTS_TICKERS.values() for t in cat]
+    oil_hist_df = fetch(all_oil_tickers)
+    if not oil_hist_df.empty:
+        save_history(oil_hist_df, "oil_products_prices.csv")
 
     stamp_update()
     git_push()

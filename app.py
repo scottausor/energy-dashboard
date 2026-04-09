@@ -28,6 +28,7 @@ from config import (
     MACRO_TICKERS, TREASURY_TICKERS,
     PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SECTIONS, PHYSICAL_COAL_SWAPS,
     PHYSICAL_COAL_RB_ARGUS, PHYSICAL_COAL_ARA_ARGUS, PHYSICAL_COAL_EXPORT,
+    OIL_PRODUCTS_TICKERS,
     DATA_DIR,
 )
 
@@ -148,6 +149,24 @@ def load_physical_coal_swaps() -> pd.DataFrame:
 @st.cache_data(ttl=3600)
 def load_physical_coal_prices() -> pd.DataFrame:
     path = os.path.join(DATA_DIR, "prices", "physical_coal_prices.csv")
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    df = pd.read_csv(path, index_col=0, parse_dates=True)
+    df.index = pd.to_datetime(df.index)
+    return df
+
+
+@st.cache_data(ttl=3600)
+def load_oil_products_snapshot() -> pd.DataFrame:
+    path = os.path.join(DATA_DIR, "prices", "oil_products_snapshot.csv")
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    return pd.read_csv(path)
+
+
+@st.cache_data(ttl=3600)
+def load_oil_products_prices() -> pd.DataFrame:
+    path = os.path.join(DATA_DIR, "prices", "oil_products_prices.csv")
     if not os.path.exists(path):
         return pd.DataFrame()
     df = pd.read_csv(path, index_col=0, parse_dates=True)
@@ -625,10 +644,12 @@ def main():
     energy_ct_df     = load_energy_ct()
     physical_coal_df   = load_physical_coal_prices()
     physical_swaps_df  = load_physical_coal_swaps()
+    oil_snap_df        = load_oil_products_snapshot()
+    oil_prices_df      = load_oil_products_prices()
 
     # ── Tabs ──────────────────────────────────────────────────────────────────
-    tab_summary, tab_coal, tab_phys, tab_energy, tab_macro = st.tabs([
-        "📋  Summary", "🪨  Coal", "⛏️  Physical Coal", "🛢️  Energy", "🌍  Macro"
+    tab_summary, tab_coal, tab_phys, tab_energy, tab_oil, tab_macro = st.tabs([
+        "📋  Summary", "🪨  Coal", "⛏️  Physical Coal", "🛢️  Energy", "⛽  Oil Products", "🌍  Macro"
     ])
 
     # ════════════════════════════════════════════════════════════════════════
@@ -1006,6 +1027,51 @@ def main():
         render_energy_ct_table(energy_ct_df)
 
     # ════════════════════════════════════════════════════════════════════════
+    # OIL PRODUCTS TAB
+    # ════════════════════════════════════════════════════════════════════════
+    with tab_oil:
+
+        def _colour_chg_oil(val):
+            if pd.isna(val) or not isinstance(val, (int, float)):
+                return ""
+            return "color: #00CC96" if val > 0 else "color: #EF553B" if val < 0 else ""
+
+        for category, cat_tickers in OIL_PRODUCTS_TICKERS.items():
+            st.markdown(f"#### {category}")
+
+            # ── Snapshot table: Name | Last | Time | 1D Net ───────────────
+            if not oil_snap_df.empty:
+                cat_snap = oil_snap_df[oil_snap_df["category"] == category].copy()
+                if not cat_snap.empty:
+                    display = cat_snap[["name", "px_last", "last_update_dt", "chg_net_1d"]].copy()
+                    display.columns = ["Name", "Last", "Time", "1D Net"]
+                    fmt = {"Last": "{:.2f}", "1D Net": "{:+.2f}"}
+                    styled = (
+                        display.style
+                        .format(fmt, na_rep="—")
+                        .map(_colour_chg_oil, subset=["1D Net"])
+                    )
+                    st.dataframe(styled, use_container_width=True, hide_index=True)
+            else:
+                st.info("No snapshot data yet. Run `python bloomberg_pull.py` to fetch.")
+
+            # ── Price history charts, 2 per row ───────────────────────────
+            tickers_list = list(cat_tickers.keys())
+            for i in range(0, len(tickers_list), 2):
+                pair = tickers_list[i:i + 2]
+                cols = st.columns(len(pair))
+                for col, ticker in zip(cols, pair):
+                    cfg = cat_tickers[ticker]
+                    with col:
+                        st.plotly_chart(
+                            price_chart(oil_prices_df, ticker, cfg["name"],
+                                        cfg["color"], date_from, height=260),
+                            use_container_width=True, config=_CHART_CFG,
+                            key=f"chart_oil_{ticker.replace(' ', '_')}",
+                        )
+
+            st.divider()
+
     # MACRO TAB
     # ════════════════════════════════════════════════════════════════════════
     with tab_macro:
