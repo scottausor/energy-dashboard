@@ -1,6 +1,6 @@
 commodity,type,contract,chg_net_1d,chg_pct_1d,fut_last_trade_dt,open_int,px_last,px_volume
 API4 - FOB Richards Bay,Monthly,XO1 Comdty,0.25,0.2403846153846154,2026-04-24,647,104.25,7.0
-API4 - FOB Richards Bay,Monthly,XO2 Comdty,1.0,0.9685230024213076,2026-05-29,557,104.25,121.0
+API4 - FOB Richards Bay,Monthly,XO2 Comdty,0.75,0.7194244604316548,2026-05-29,557,105.0,82.0
 API4 - FOB Richards Bay,Monthly,XO3 Comdty,0.75,0.7228915662650602,2026-06-26,354,104.5,77.0
 API4 - FOB Richards Bay,Monthly,XO4 Comdty,0.75,0.7228915662650602,2026-07-31,168,104.5,
 API4 - FOB Richards Bay,Monthly,XO5 Comdty,0.75,0.7183908045977011,2026-08-28,165,105.15,
