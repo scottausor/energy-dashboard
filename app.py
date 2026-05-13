@@ -1157,6 +1157,10 @@ def main():
                     })
 
             tbl = pd.DataFrame(table_rows)
+            # Sort by settlement date ascending
+            tbl["_sort_date"] = pd.to_datetime(tbl["Date"], errors="coerce")
+            tbl = tbl.sort_values("_sort_date").drop(columns="_sort_date").reset_index(drop=True)
+
             styled_fwd = (
                 tbl.style
                 .format({
