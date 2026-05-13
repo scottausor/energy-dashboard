@@ -397,43 +397,65 @@ def demo_oil_products_snapshot() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+SPOT_TICKER = "ZAR BGN Curncy"
+
 def bbg_usdzar_forwards() -> pd.DataFrame:
-    """Pull snapshot fields for USDZAR forward tenors (BGN)."""
+    """
+    Pull PX_BID, PX_ASK, SETTLE_DT for all USDZAR tenors.
+    For the spot row these are outright rates; for all forward rows
+    they are forward points (pips). The app layer computes outrights.
+    """
     log.info("  bdp → USDZAR forward curve")
     tickers = list(USDZAR_FORWARDS.keys())
     try:
-        df = blp.bdp(
-            tickers=tickers,
-            flds=["PX_BID", "PX_ASK", "PX_MID", "PX_LAST", "CHG_NET_1D"],
-        )
+        df = blp.bdp(tickers=tickers, flds=["PX_BID", "PX_ASK", "SETTLE_DT"])
         df.index.name = "ticker"
         df = df.reset_index()
         df.columns = [c.lower() for c in df.columns]
         df["tenor"] = df["ticker"].map(USDZAR_FORWARDS)
-        # Return tenor first, then all price columns that came back
-        price_cols = [c for c in df.columns if c not in ("ticker", "tenor")]
-        return df[["tenor"] + price_cols]
+        return df[["tenor", "ticker", "px_bid", "px_ask", "settle_dt"]]
     except Exception as exc:
         log.error(f"  bbg_usdzar_forwards failed: {exc}")
         return pd.DataFrame()
 
 
 def demo_usdzar_forwards() -> pd.DataFrame:
-    """Demo synthetic USDZAR forward curve."""
-    rng = np.random.default_rng(77)
+    """
+    Demo: spot row has outright bid/ask; forward rows have forward points.
+    settle_dt is a plausible settlement date.
+    """
+    from datetime import date, timedelta
     rows = []
+    # Seed points table (matching the Bloomberg screenshot roughly)
+    pts = {
+        "Overnight": (13, 14), "Tom Next": (13, 14), "Spot": None,
+        "Spot Next": (38, 41), "1 Week": (89, 93), "2 Weeks": (177, 184),
+        "3 Weeks": (268, 278), "1 Month": (397, 410), "2 Months": (782, 797),
+        "3 Months": (1214, 1240), "4 Months": (1622, 1665), "5 Months": (2057, 2103),
+        "6 Months": (2527, 2591), "9 Months": (3931, 4010), "1 Year": (5304, 5404),
+        "15 Months": (6706, 6860), "18 Months": (8125, 8304), "2 Years": (10890, 11290),
+        "3 Years": (16941, 17389), "4 Years": (23456, 24064), "5 Years": (30422, 31430),
+        "6 Years": (35808, 36941),
+    }
+    spot_bid, spot_ask = 16.4703, 16.4766
+    today = date.today()
+    settle_offsets = {
+        "Overnight": 1, "Tom Next": 2, "Spot": 2, "Spot Next": 3,
+        "1 Week": 7, "2 Weeks": 14, "3 Weeks": 21, "1 Month": 30,
+        "2 Months": 60, "3 Months": 90, "4 Months": 120, "5 Months": 150,
+        "6 Months": 180, "9 Months": 270, "1 Year": 365, "15 Months": 456,
+        "18 Months": 547, "2 Years": 730, "3 Years": 1095, "4 Years": 1460,
+        "5 Years": 1825, "6 Years": 2190,
+    }
     for ticker, tenor in USDZAR_FORWARDS.items():
-        mid = DEMO_SEED_PRICES.get(ticker, 18.5)
-        spread = round(rng.uniform(0.002, 0.008) * mid, 4)
-        chg = round(rng.normal(0, mid * 0.003), 4)
-        rows.append({
-            "tenor":      tenor,
-            "px_bid":     round(mid - spread / 2, 4),
-            "px_ask":     round(mid + spread / 2, 4),
-            "px_mid":     round(mid, 4),
-            "px_last":    round(mid + chg / 2, 4),
-            "chg_net_1d": chg,
-        })
+        settle = (today + timedelta(days=settle_offsets.get(tenor, 2))).strftime("%m/%d/%y")
+        if tenor == "Spot":
+            rows.append({"tenor": tenor, "ticker": ticker,
+                         "px_bid": spot_bid, "px_ask": spot_ask, "settle_dt": settle})
+        else:
+            p = pts.get(tenor, (0, 0))
+            rows.append({"tenor": tenor, "ticker": ticker,
+                         "px_bid": p[0], "px_ask": p[1], "settle_dt": settle})
     return pd.DataFrame(rows)
 
 

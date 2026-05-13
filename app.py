@@ -1115,27 +1115,57 @@ def main():
         st.divider()
         st.markdown("#### USDZAR Forward Curve")
         if not usdzar_fwd_df.empty and "tenor" in usdzar_fwd_df.columns:
-            fwd_display = usdzar_fwd_df.copy()
-            # Friendly column names
-            col_rename = {
-                "tenor":      "Tenor",
-                "px_bid":     "Fwds Bid",
-                "px_ask":     "Fwds Ask",
-                "px_mid":     "Mid",
-                "px_last":    "Last",
-                "chg_net_1d": "1D Net",
-            }
-            fwd_display = fwd_display.rename(columns=col_rename)
-            # Format all numeric columns to 4dp, colour 1D Net if present
-            num_cols = [c for c in fwd_display.columns if c != "Tenor"]
-            fmt = {c: "{:.4f}" for c in num_cols}
-            styled_fwd = fwd_display.style.format(fmt, na_rep="—")
-            if "1D Net" in fwd_display.columns:
-                def _chg_colour(val):
-                    if pd.isna(val) or not isinstance(val, (int, float)):
-                        return ""
-                    return "color: #00CC96" if val > 0 else "color: #EF553B" if val < 0 else ""
-                styled_fwd = styled_fwd.map(_chg_colour, subset=["1D Net"])
+            df_fwd = usdzar_fwd_df.copy()
+
+            # Get spot outright bid/ask from the spot row
+            spot_row = df_fwd[df_fwd["ticker"] == "ZAR BGN Curncy"]
+            spot_bid = spot_row["px_bid"].iloc[0] if not spot_row.empty else None
+            spot_ask = spot_row["px_ask"].iloc[0] if not spot_row.empty else None
+
+            # Build display table
+            table_rows = []
+            for _, row in df_fwd.iterrows():
+                tenor   = row["tenor"]
+                is_spot = row["ticker"] == "ZAR BGN Curncy"
+                pts_bid = row.get("px_bid")
+                pts_ask = row.get("px_ask")
+                settle  = row.get("settle_dt", "—")
+
+                if is_spot:
+                    # Spot row: px_bid/ask ARE the outright rates; no points
+                    table_rows.append({
+                        "Tenor":     tenor,
+                        "Date":      settle,
+                        "Pts Bid":   None,
+                        "Pts Ask":   None,
+                        "Fwds Bid":  pts_bid,
+                        "Fwds Ask":  pts_ask,
+                    })
+                else:
+                    # Forward rows: px_bid/ask are forward points (pips)
+                    fwd_bid = (spot_bid + pts_bid / 10000
+                               if spot_bid is not None and pd.notna(pts_bid) else None)
+                    fwd_ask = (spot_ask + pts_ask / 10000
+                               if spot_ask is not None and pd.notna(pts_ask) else None)
+                    table_rows.append({
+                        "Tenor":     tenor,
+                        "Date":      settle,
+                        "Pts Bid":   pts_bid,
+                        "Pts Ask":   pts_ask,
+                        "Fwds Bid":  fwd_bid,
+                        "Fwds Ask":  fwd_ask,
+                    })
+
+            tbl = pd.DataFrame(table_rows)
+            styled_fwd = (
+                tbl.style
+                .format({
+                    "Pts Bid":  "{:.0f}",
+                    "Pts Ask":  "{:.0f}",
+                    "Fwds Bid": "{:.4f}",
+                    "Fwds Ask": "{:.4f}",
+                }, na_rep="—")
+            )
             st.dataframe(styled_fwd, use_container_width=True, hide_index=True)
         else:
             st.info("No forward data yet. Run `python bloomberg_pull.py` to fetch.")
