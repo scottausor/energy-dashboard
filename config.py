@@ -230,6 +230,32 @@ OIL_PRODUCTS_TICKERS = {
     },
 }
 
+# ── USDZAR Forward Curve (BGN tenors) ──────────────────────────────────────────
+USDZAR_FORWARDS = {
+    "ZARON BGN Curncy":  "Overnight",
+    "ZARTN BGN Curncy":  "Tom Next",
+    "ZAR BGN Curncy":    "Spot",
+    "ZARSN BGN Curncy":  "Spot Next",
+    "ZAR1W BGN Curncy":  "1 Week",
+    "ZAR2W BGN Curncy":  "2 Weeks",
+    "ZAR3W BGN Curncy":  "3 Weeks",
+    "ZAR1M BGN Curncy":  "1 Month",
+    "ZAR2M BGN Curncy":  "2 Months",
+    "ZAR3M BGN Curncy":  "3 Months",
+    "ZAR4M BGN Curncy":  "4 Months",
+    "ZAR5M BGN Curncy":  "5 Months",
+    "ZAR6M BGN Curncy":  "6 Months",
+    "ZAR9M BGN Curncy":  "9 Months",
+    "ZAR12M BGN Curncy": "1 Year",
+    "ZAR15M BGN Curncy": "15 Months",
+    "ZAR18M BGN Curncy": "18 Months",
+    "ZAR2Y BGN Curncy":  "2 Years",
+    "ZAR3Y BGN Curncy":  "3 Years",
+    "ZAR4Y BGN Curncy":  "4 Years",
+    "ZAR5Y BGN Curncy":  "5 Years",
+    "ZAR6Y BGN Curncy":  "6 Years",
+}
+
 # ── Macro Indicators ───────────────────────────────────────────────────────────
 MACRO_TICKERS = {
     "USDZAR Curncy": {"name": "USD / ZAR",       "short": "USDZAR",  "color": "#8338EC"},

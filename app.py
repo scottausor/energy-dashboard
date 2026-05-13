@@ -29,6 +29,7 @@ from config import (
     PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SECTIONS, PHYSICAL_COAL_SWAPS,
     PHYSICAL_COAL_RB_ARGUS, PHYSICAL_COAL_ARA_ARGUS, PHYSICAL_COAL_EXPORT,
     OIL_PRODUCTS_TICKERS,
+    USDZAR_FORWARDS,
     DATA_DIR,
 )
 
@@ -154,6 +155,14 @@ def load_physical_coal_prices() -> pd.DataFrame:
     df = pd.read_csv(path, index_col=0, parse_dates=True)
     df.index = pd.to_datetime(df.index)
     return df
+
+
+@st.cache_data(ttl=3600)
+def load_usdzar_forwards() -> pd.DataFrame:
+    path = os.path.join(DATA_DIR, "macro", "usdzar_forwards.csv")
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    return pd.read_csv(path)
 
 
 @st.cache_data(ttl=3600)
@@ -646,6 +655,7 @@ def main():
     physical_swaps_df  = load_physical_coal_swaps()
     oil_snap_df        = load_oil_products_snapshot()
     oil_prices_df      = load_oil_products_prices()
+    usdzar_fwd_df      = load_usdzar_forwards()
 
     # ── Tabs ──────────────────────────────────────────────────────────────────
     tab_summary, tab_coal, tab_phys, tab_energy, tab_oil, tab_macro = st.tabs([
@@ -1101,6 +1111,23 @@ def main():
                             MACRO_TICKERS["XBTUSD Curncy"]["color"], date_from),
                 use_container_width=True, config=_CHART_CFG, key="chart_btc",
             )
+
+        st.divider()
+        st.markdown("#### USDZAR Forward Curve")
+        if not usdzar_fwd_df.empty and "bid" in usdzar_fwd_df.columns:
+            fwd_display = usdzar_fwd_df[["tenor", "bid", "ask"]].copy()
+            fwd_display.columns = ["Tenor", "Fwds Bid", "Fwds Ask"]
+
+            def _colour_fwd(val):
+                return ""  # neutral — no directional colouring for rates
+
+            styled_fwd = (
+                fwd_display.style
+                .format({"Fwds Bid": "{:.4f}", "Fwds Ask": "{:.4f}"}, na_rep="—")
+            )
+            st.dataframe(styled_fwd, use_container_width=True, hide_index=True)
+        else:
+            st.info("No forward data yet. Run `python bloomberg_pull.py` to fetch.")
 
         st.divider()
         st.markdown("#### US Treasury Actives Yield Curve (GC)")

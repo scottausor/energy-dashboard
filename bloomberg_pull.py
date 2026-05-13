@@ -28,6 +28,7 @@ from config import (
     TREASURY_TICKERS, FUTURES_CHAIN_FIELDS, HISTORY_FIELD,
     PHYSICAL_COAL_TICKERS, PHYSICAL_COAL_SWAPS,
     OIL_PRODUCTS_TICKERS,
+    USDZAR_FORWARDS,
 )
 
 # ── Logging setup ──────────────────────────────────────────────────────────────
@@ -177,6 +178,15 @@ DEMO_SEED_PRICES = {
     "NAPHJPNC Index": 620.0, "GIOS0092 Index": 630.0,
     # Oil Products — LPG
     "GIOS0878 Index": 580.0, "GIOS0880 Index": 590.0, "GIOS0686 Index": 560.0,
+    # USDZAR Forwards (synthetic spot + upward curve)
+    "ZARON BGN Curncy": 18.50, "ZARTN BGN Curncy": 18.50, "ZAR BGN Curncy": 18.51,
+    "ZARSN BGN Curncy": 18.51, "ZAR1W BGN Curncy": 18.55, "ZAR2W BGN Curncy": 18.59,
+    "ZAR3W BGN Curncy": 18.63, "ZAR1M BGN Curncy": 18.72, "ZAR2M BGN Curncy": 18.93,
+    "ZAR3M BGN Curncy": 19.14, "ZAR4M BGN Curncy": 19.35, "ZAR5M BGN Curncy": 19.56,
+    "ZAR6M BGN Curncy": 19.77, "ZAR9M BGN Curncy": 20.35, "ZAR12M BGN Curncy": 20.93,
+    "ZAR15M BGN Curncy": 21.50, "ZAR18M BGN Curncy": 22.07, "ZAR2Y BGN Curncy": 23.20,
+    "ZAR3Y BGN Curncy": 25.40, "ZAR4Y BGN Curncy": 27.50, "ZAR5Y BGN Curncy": 29.50,
+    "ZAR6Y BGN Curncy": 31.40,
     # Macro
     "USDZAR Curncy": 18.50, "XAU Curncy": 2050.0, "XBTUSD Curncy": 62000.0,
     # Treasuries (yields)
@@ -387,6 +397,38 @@ def demo_oil_products_snapshot() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def bbg_usdzar_forwards() -> pd.DataFrame:
+    """Pull Bid/Ask for USDZAR forward tenors (BGN)."""
+    log.info("  bdp → USDZAR forward curve")
+    tickers = list(USDZAR_FORWARDS.keys())
+    try:
+        df = blp.bdp(tickers=tickers, flds=["BID", "ASK"])
+        df.index.name = "ticker"
+        df = df.reset_index()
+        df.columns = [c.lower() for c in df.columns]
+        df["tenor"] = df["ticker"].map(USDZAR_FORWARDS)
+        return df[["tenor", "ticker", "bid", "ask"]]
+    except Exception as exc:
+        log.error(f"  bbg_usdzar_forwards failed: {exc}")
+        return pd.DataFrame()
+
+
+def demo_usdzar_forwards() -> pd.DataFrame:
+    """Demo synthetic USDZAR forward curve."""
+    rng = np.random.default_rng(77)
+    rows = []
+    for ticker, tenor in USDZAR_FORWARDS.items():
+        mid = DEMO_SEED_PRICES.get(ticker, 18.5)
+        spread = round(rng.uniform(0.002, 0.008) * mid, 4)
+        rows.append({
+            "tenor":  tenor,
+            "ticker": ticker,
+            "bid":    round(mid - spread / 2, 4),
+            "ask":    round(mid + spread / 2, 4),
+        })
+    return pd.DataFrame(rows)
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # Save helpers
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -473,12 +515,13 @@ def run():
     log.info(f"  Mode: {'LIVE (Bloomberg)' if BBG_OK else 'DEMO (synthetic)'}   ")
     log.info("════════════════════════════════════════")
 
-    fetch       = bbg_history              if BBG_OK else demo_history
-    chain       = bbg_futures_chain        if BBG_OK else demo_futures_chain
-    tsy         = bbg_treasury_curve       if BBG_OK else demo_treasury_curve
-    ct_pull     = bbg_explicit_contracts   if BBG_OK else demo_explicit_contracts
-    swaps_pull  = bbg_physical_swaps       if BBG_OK else demo_physical_swaps
-    oil_snap    = bbg_oil_products_snapshot if BBG_OK else demo_oil_products_snapshot
+    fetch        = bbg_history               if BBG_OK else demo_history
+    chain        = bbg_futures_chain         if BBG_OK else demo_futures_chain
+    tsy          = bbg_treasury_curve        if BBG_OK else demo_treasury_curve
+    ct_pull      = bbg_explicit_contracts    if BBG_OK else demo_explicit_contracts
+    swaps_pull   = bbg_physical_swaps        if BBG_OK else demo_physical_swaps
+    oil_snap     = bbg_oil_products_snapshot if BBG_OK else demo_oil_products_snapshot
+    zar_fwd_pull = bbg_usdzar_forwards       if BBG_OK else demo_usdzar_forwards
 
     # 1 ── Coal prices ──────────────────────────────────────────────────────────
     log.info("[1/7] Coal historical prices")
@@ -575,6 +618,14 @@ def run():
     treasury_df = tsy()
     if not treasury_df.empty:
         save_macro(treasury_df, "treasury_curve.csv")
+
+    # 5b ── USDZAR forward curve ────────────────────────────────────────────────
+    log.info("[5b/7] USDZAR forward curve (BGN Bid/Ask)")
+    zar_df = zar_fwd_pull()
+    if not zar_df.empty:
+        path = os.path.join(DATA_DIR, "macro", "usdzar_forwards.csv")
+        zar_df.to_csv(path, index=False)
+        log.info(f"  saved → {path}  rows={len(zar_df)}")
 
     # 6 ── Oil Products snapshot + history ─────────────────────────────────────
     log.info("[6/7] Oil Products snapshot (BOIL equivalent)")
