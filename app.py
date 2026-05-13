@@ -1114,17 +1114,28 @@ def main():
 
         st.divider()
         st.markdown("#### USDZAR Forward Curve")
-        if not usdzar_fwd_df.empty and "bid" in usdzar_fwd_df.columns:
-            fwd_display = usdzar_fwd_df[["tenor", "bid", "ask"]].copy()
-            fwd_display.columns = ["Tenor", "Fwds Bid", "Fwds Ask"]
-
-            def _colour_fwd(val):
-                return ""  # neutral — no directional colouring for rates
-
-            styled_fwd = (
-                fwd_display.style
-                .format({"Fwds Bid": "{:.4f}", "Fwds Ask": "{:.4f}"}, na_rep="—")
-            )
+        if not usdzar_fwd_df.empty and "tenor" in usdzar_fwd_df.columns:
+            fwd_display = usdzar_fwd_df.copy()
+            # Friendly column names
+            col_rename = {
+                "tenor":      "Tenor",
+                "px_bid":     "Fwds Bid",
+                "px_ask":     "Fwds Ask",
+                "px_mid":     "Mid",
+                "px_last":    "Last",
+                "chg_net_1d": "1D Net",
+            }
+            fwd_display = fwd_display.rename(columns=col_rename)
+            # Format all numeric columns to 4dp, colour 1D Net if present
+            num_cols = [c for c in fwd_display.columns if c != "Tenor"]
+            fmt = {c: "{:.4f}" for c in num_cols}
+            styled_fwd = fwd_display.style.format(fmt, na_rep="—")
+            if "1D Net" in fwd_display.columns:
+                def _chg_colour(val):
+                    if pd.isna(val) or not isinstance(val, (int, float)):
+                        return ""
+                    return "color: #00CC96" if val > 0 else "color: #EF553B" if val < 0 else ""
+                styled_fwd = styled_fwd.map(_chg_colour, subset=["1D Net"])
             st.dataframe(styled_fwd, use_container_width=True, hide_index=True)
         else:
             st.info("No forward data yet. Run `python bloomberg_pull.py` to fetch.")

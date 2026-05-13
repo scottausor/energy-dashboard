@@ -398,16 +398,21 @@ def demo_oil_products_snapshot() -> pd.DataFrame:
 
 
 def bbg_usdzar_forwards() -> pd.DataFrame:
-    """Pull Bid/Ask for USDZAR forward tenors (BGN)."""
+    """Pull snapshot fields for USDZAR forward tenors (BGN)."""
     log.info("  bdp → USDZAR forward curve")
     tickers = list(USDZAR_FORWARDS.keys())
     try:
-        df = blp.bdp(tickers=tickers, flds=["BID", "ASK"])
+        df = blp.bdp(
+            tickers=tickers,
+            flds=["PX_BID", "PX_ASK", "PX_MID", "PX_LAST", "CHG_NET_1D"],
+        )
         df.index.name = "ticker"
         df = df.reset_index()
         df.columns = [c.lower() for c in df.columns]
         df["tenor"] = df["ticker"].map(USDZAR_FORWARDS)
-        return df[["tenor", "ticker", "bid", "ask"]]
+        # Return tenor first, then all price columns that came back
+        price_cols = [c for c in df.columns if c not in ("ticker", "tenor")]
+        return df[["tenor"] + price_cols]
     except Exception as exc:
         log.error(f"  bbg_usdzar_forwards failed: {exc}")
         return pd.DataFrame()
@@ -420,11 +425,14 @@ def demo_usdzar_forwards() -> pd.DataFrame:
     for ticker, tenor in USDZAR_FORWARDS.items():
         mid = DEMO_SEED_PRICES.get(ticker, 18.5)
         spread = round(rng.uniform(0.002, 0.008) * mid, 4)
+        chg = round(rng.normal(0, mid * 0.003), 4)
         rows.append({
-            "tenor":  tenor,
-            "ticker": ticker,
-            "bid":    round(mid - spread / 2, 4),
-            "ask":    round(mid + spread / 2, 4),
+            "tenor":      tenor,
+            "px_bid":     round(mid - spread / 2, 4),
+            "px_ask":     round(mid + spread / 2, 4),
+            "px_mid":     round(mid, 4),
+            "px_last":    round(mid + chg / 2, 4),
+            "chg_net_1d": chg,
         })
     return pd.DataFrame(rows)
 
